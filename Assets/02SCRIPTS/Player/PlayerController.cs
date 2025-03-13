@@ -20,9 +20,9 @@ public class PlayerController : MonoBehaviour
 
     public void SpawnUnit(UnitType unitType)
     {
-        Unit newUnit = ObjectPool.Instance.GetPooledObject(unitType);
-        newUnit.Initialize(this, castle._spawnPoint.position);
-        activeUnits.Add(newUnit);
+        //Unit newUnit = ObjectPool.Instance.GetPooledObject(unitType);
+        //newUnit.Initialize(this, castle._spawnPoint.position);
+        //activeUnits.Add(newUnit);
     }
 }
 

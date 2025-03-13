@@ -28,7 +28,7 @@ public class Castle
         }
     }
 
-    private void LevelUp()
+    public void LevelUp()
     {
         xp = 0;
         level++;
@@ -37,7 +37,7 @@ public class Castle
         Debug.Log("Castle leveled up to: " + level);
     }
 
-    private void DestroyCastle()
+    public void DestroyCastle()
     {
         Debug.Log("Castle has been destroyed!");
         // Burada oyunu bitirme veya diðer oyuncuya zafer kazandýrma iþlemleri eklenebilir.

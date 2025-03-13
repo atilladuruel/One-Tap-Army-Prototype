@@ -4,13 +4,11 @@ public class AttackState : IUnitState
 {
     public void EnterState(Unit unit)
     {
-        Debug.Log(unit.name + " attacking.");
+        Debug.Log(unit.unitName + " is attacking!");
     }
-
     public void UpdateState(Unit unit)
     {
-        // Birim saldýrý yapsýn
+        // Implement attack logic here
     }
-
     public void ExitState() { }
 }

@@ -1,42 +1,60 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectPool : MonoBehaviour
+// Object Pooler for Units
+public class ObjectPooler : MonoBehaviour
 {
-    public static ObjectPool Instance;
-
-    private Dictionary<UnitType, Queue<Unit>> unitPool = new Dictionary<UnitType, Queue<Unit>>();
-    public List<Unit> unitPrefabs;
-
-    private void Awake()
+    private static ObjectPooler _instance;
+    public static ObjectPooler Instance
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
-
-        foreach (var unitPrefab in unitPrefabs)
+        get
         {
-            unitPool[unitPrefab.unitType] = new Queue<Unit>();
+            if (_instance == null)
+            {
+                _instance = FindObjectOfType<ObjectPooler>();
+            }
+            return _instance;
         }
     }
 
-    public Unit GetPooledObject(UnitType type)
+    public GameObject unitPrefab;
+    public int poolSize = 10;
+    private Queue<GameObject> unitPool = new Queue<GameObject>();
+
+    private void Awake()
     {
-        if (unitPool[type].Count > 0)
+        if (_instance != null && _instance != this)
         {
-            Unit unit = unitPool[type].Dequeue();
-            unit.gameObject.SetActive(true);
+            Destroy(gameObject);
+            return;
+        }
+        _instance = this;
+
+        for (int i = 0; i < poolSize; i++)
+        {
+            GameObject unit = Instantiate(unitPrefab);
+            unit.SetActive(false);
+            unitPool.Enqueue(unit);
+        }
+    }
+
+    public GameObject GetUnit()
+    {
+        if (unitPool.Count > 0)
+        {
+            GameObject unit = unitPool.Dequeue();
+            unit.SetActive(true);
             return unit;
         }
         else
         {
-            Unit newUnit = Instantiate(unitPrefabs.Find(u => u.unitType == type));
-            return newUnit;
+            return Instantiate(unitPrefab);
         }
     }
 
-    public void ReturnToPool(Unit unit)
+    public void ReturnUnit(GameObject unit)
     {
-        unit.gameObject.SetActive(false);
-        unitPool[unit.unitType].Enqueue(unit);
+        unit.SetActive(false);
+        unitPool.Enqueue(unit);
     }
 }

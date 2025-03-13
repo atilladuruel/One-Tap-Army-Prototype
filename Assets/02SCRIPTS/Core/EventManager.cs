@@ -1,12 +1,37 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EventManager : MonoBehaviour
 {
-    public static event Action<int> OnPlayerLevelUp;
+    private Dictionary<string, Action> eventDictionary = new Dictionary<string, Action>();
+    public static EventManager Instance;
 
-    public static void PlayerLevelUp(int playerID)
+    private void Awake()
     {
-        OnPlayerLevelUp?.Invoke(playerID);
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
+    }
+
+    public void Subscribe(string eventName, Action listener)
+    {
+        if (!eventDictionary.ContainsKey(eventName))
+            eventDictionary[eventName] = listener;
+        else
+            eventDictionary[eventName] += listener;
+    }
+
+    public void Unsubscribe(string eventName, Action listener)
+    {
+        if (eventDictionary.ContainsKey(eventName))
+            eventDictionary[eventName] -= listener;
+    }
+
+    public void TriggerEvent(string eventName)
+    {
+        if (eventDictionary.ContainsKey(eventName))
+            eventDictionary[eventName]?.Invoke();
     }
 }

@@ -1,54 +1,86 @@
+using UnityEngine.AI;
 using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
-    public PlayerController owner;
-    public UnitStateMachine stateMachine;
-    public UnitType unitType;
-    public bool isDead = false;
+    public string unitName;
+    public int health;
+    public float speed;
+    public int attackPower;
+    public NavMeshAgent agent;
+
+    private IUnitState currentState;
+
+    // New XP & Level system
+    private int xp = 0;
+    private int level = 1;
+    private int xpToNextLevel = 100; // XP required for next level
+
+    public event System.Action OnLevelUp; // Event to notify level up
 
     private void Awake()
     {
-        stateMachine = new UnitStateMachine(this);
-    }
-
-    public void Initialize(PlayerController player, Vector3 spawnPosition)
-    {
-        owner = player;
-        transform.position = spawnPosition;
-        stateMachine.ChangeState(new IdleState());
+        agent = GetComponent<NavMeshAgent>();
+        agent.speed = speed;
+        ChangeState(new IdleState());
     }
 
     private void Update()
     {
-        stateMachine.Update();
+        currentState?.UpdateState(this);
     }
 
-    public void MoveTo(Vector3 destination)
+    public void ChangeState(IUnitState newState)
     {
-        if (!isDead)
-            stateMachine.ChangeState(new MoveState());
+        currentState?.ExitState();
+        currentState = newState;
+        currentState.EnterState(this);
     }
 
-    public void Attack()
+    public void MoveTo(Vector3 targetPosition)
     {
-        if (!isDead)
-            stateMachine.ChangeState(new AttackState());
+        agent.SetDestination(targetPosition);
+        ChangeState(new MoveState(targetPosition));
     }
 
-    public void Die()
+    /// <summary>
+    /// Grants experience points to the unit and checks for level-up.
+    /// </summary>
+    public void GainXP(int amount)
     {
-        if (!isDead)
+        xp += amount;
+        if (xp >= xpToNextLevel)
         {
-            isDead = true;
-            stateMachine.ChangeState(new DeathState());
+            LevelUp();
         }
     }
 
-    public void HandleDeath()
+    /// <summary>
+    /// Increases the unit's level and resets XP progress.
+    /// </summary>
+    private void LevelUp()
     {
-        // Birim ölüm animasyonu oynatabilir
-        // Birim oyun dünyasýndan kaldýrýlabilir
-        Destroy(gameObject, 2f); // 2 saniye sonra birimi yok et
+        level++;
+        xp -= xpToNextLevel;
+        xpToNextLevel += 50; // Increase required XP for next level
+        OnLevelUp?.Invoke(); // Notify listeners (e.g., HUD)
+
+        Debug.Log($"{unitName} leveled up to {level}!");
+    }
+
+    /// <summary>
+    /// Returns the current XP value.
+    /// </summary>
+    public int GetXP()
+    {
+        return xp;
+    }
+
+    /// <summary>
+    /// Returns the current level of the unit.
+    /// </summary>
+    public int GetLevel()
+    {
+        return level;
     }
 }
