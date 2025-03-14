@@ -17,7 +17,7 @@ public class ObjectPooler : MonoBehaviour
         }
     }
 
-    public GameObject unitPrefab;
+    public List<GameObject> unitPrefab;
     public int poolSize = 10;
     private Queue<GameObject> unitPool = new Queue<GameObject>();
 
@@ -30,11 +30,14 @@ public class ObjectPooler : MonoBehaviour
         }
         _instance = this;
 
-        for (int i = 0; i < poolSize; i++)
+        for (int j = 0; j < unitPrefab.Count; j++)
         {
-            GameObject unit = Instantiate(unitPrefab);
-            unit.SetActive(false);
-            unitPool.Enqueue(unit);
+            for (int i = 0; i < poolSize; i++)
+            {
+                GameObject unit = Instantiate(unitPrefab[j]);
+                unit.SetActive(false);
+                unitPool.Enqueue(unit);
+            }
         }
     }
 
@@ -48,7 +51,7 @@ public class ObjectPooler : MonoBehaviour
         }
         else
         {
-            return Instantiate(unitPrefab);
+            return Instantiate(unitPrefab[0]);
         }
     }
 

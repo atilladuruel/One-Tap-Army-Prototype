@@ -6,7 +6,7 @@ public class UpgradePanel : MonoBehaviour
 {
     [SerializeField] private GameObject upgradePanel;
     [SerializeField] private Button[] upgradeButtons;
-    private List<UpgradeData> availableUpgrades;
+    private List<UnitData> availableUpgrades;
 
     private void Start()
     {
@@ -26,7 +26,7 @@ public class UpgradePanel : MonoBehaviour
             if (i < availableUpgrades.Count)
             {
                 upgradeButtons[i].gameObject.SetActive(true);
-                upgradeButtons[i].GetComponentInChildren<Text>().text = availableUpgrades[i].upgradeName;
+                //upgradeButtons[i].GetComponentInChildren<Text>().text = availableUpgrades[i].upgradeName;
                 int index = i;
                 upgradeButtons[i].onClick.RemoveAllListeners();
                 upgradeButtons[i].onClick.AddListener(() => ApplyUpgrade(availableUpgrades[index]));
@@ -49,7 +49,7 @@ public class UpgradePanel : MonoBehaviour
     /// <summary>
     /// Applies the selected upgrade and updates the UI.
     /// </summary>
-    private void ApplyUpgrade(UpgradeData upgrade)
+    private void ApplyUpgrade(UnitData upgrade)
     {
         Unit playerUnit = FindObjectOfType<Unit>();
         if (playerUnit != null)

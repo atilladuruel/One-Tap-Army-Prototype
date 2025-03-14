@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public int playerID;
+    public int playerID = 0;
     public Castle castle;
     public List<Unit> activeUnits = new List<Unit>();
     public PlayerLevel playerLevel;

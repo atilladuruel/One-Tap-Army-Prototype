@@ -1,20 +1,59 @@
 using UnityEngine.AI;
 using UnityEngine;
+using System;
 
 public class Unit : MonoBehaviour
 {
-    public string unitName;
-    public int health;
-    public float speed;
-    public int attackPower;
+
     public NavMeshAgent agent;
+    public UnitData unitData;
+
+    private int level = 1;
+    private string unitName;
+    private int health;
+    private float speed;
+    private int attackPower;
 
     private IUnitState currentState;
 
-    // New XP & Level system
-    private int xp = 0;
-    private int level = 1;
-    private int xpToNextLevel = 100; // XP required for next level
+    public int Level
+    {
+        get { return level; }
+        set
+        {
+            if (value > 0)
+                level = value;
+        }
+    }
+
+    public string UnitName
+    {
+        get { return unitName; }
+        set { unitName = value; }
+    }
+
+    public int Health
+    {
+        get { return health; }
+        set
+        {
+            if (value < 0) health = 0; // Saðlýk 0'ýn altýna düþmesin
+            else health = value;
+        }
+    }
+
+    public float Speed
+    {
+        get { return speed; }
+        set { speed = Math.Max(0, value); } // Hýz negatif olamaz
+    }
+
+    public int AttackPower
+    {
+        get { return attackPower; }
+        set { attackPower = Math.Max(0, value); } // Saldýrý gücü negatif olamaz
+    }
+
 
     public event System.Action OnLevelUp; // Event to notify level up
 
@@ -43,38 +82,18 @@ public class Unit : MonoBehaviour
         ChangeState(new MoveState(targetPosition));
     }
 
-    /// <summary>
-    /// Grants experience points to the unit and checks for level-up.
-    /// </summary>
-    public void GainXP(int amount)
-    {
-        xp += amount;
-        if (xp >= xpToNextLevel)
-        {
-            LevelUp();
-        }
-    }
 
     /// <summary>
     /// Increases the unit's level and resets XP progress.
     /// </summary>
     private void LevelUp()
     {
-        level++;
-        xp -= xpToNextLevel;
-        xpToNextLevel += 50; // Increase required XP for next level
+        level++; // Increase required XP for next level
         OnLevelUp?.Invoke(); // Notify listeners (e.g., HUD)
 
         Debug.Log($"{unitName} leveled up to {level}!");
     }
 
-    /// <summary>
-    /// Returns the current XP value.
-    /// </summary>
-    public int GetXP()
-    {
-        return xp;
-    }
 
     /// <summary>
     /// Returns the current level of the unit.

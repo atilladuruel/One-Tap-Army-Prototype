@@ -28,8 +28,7 @@ public class HUD : MonoBehaviour
     {
         if (playerUnit == null) return;
 
-        healthText.text = $"Health: {playerUnit.health}";
-        xpText.text = $"XP: {playerUnit.GetXP()}"; // Assuming GetXP() is implemented
+        healthText.text = $"Health: {playerUnit.Health}";
         levelText.text = $"Level: {playerUnit.GetLevel()}"; // Assuming GetLevel() is implemented
     }
 

@@ -4,7 +4,7 @@ public class AttackState : IUnitState
 {
     public void EnterState(Unit unit)
     {
-        Debug.Log(unit.unitName + " is attacking!");
+        Debug.Log(unit.UnitName + " is attacking!");
     }
     public void UpdateState(Unit unit)
     {

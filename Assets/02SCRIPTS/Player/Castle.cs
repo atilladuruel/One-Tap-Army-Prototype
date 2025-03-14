@@ -1,13 +1,11 @@
 using UnityEngine;
 
-public class Castle
+public class Castle : MonoBehaviour
 {
-    [SerializeField] private Transform _spawnPoint; //Unitlerin kaleden çýktýktan sonra toplanma noktasý
-    public int level = 1;                          // Kale seviyesi
-    private int health = 3000;                      // Kaleye ait can miktarý
-    private int maxHealth = 3000;                   // Maksimum can miktarý
-    private float xp = 0;                           // Kalenin kazandýðý deneyim puaný
-    private float xpThreshold = 100;                // Seviye atlamak için gereken XP
+    [SerializeField] private Transform _spawnPoint;
+    public int level = 1;
+    private int health = 3200;
+    private int maxHealth = 3200;
 
     public void TakeDamage(int damage)
     {
@@ -19,21 +17,11 @@ public class Castle
         }
     }
 
-    public void GainXP(float amount)
-    {
-        xp += amount;
-        if (xp >= xpThreshold)
-        {
-            LevelUp();
-        }
-    }
-
     public void LevelUp()
     {
-        xp = 0;
         level++;
         maxHealth += 500;  // Seviye baþýna ekstra can
-        health = maxHealth;
+        //health = maxHealth;
         Debug.Log("Castle leveled up to: " + level);
     }
 
