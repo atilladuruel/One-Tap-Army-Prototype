@@ -16,7 +16,7 @@ MonoBehaviour:
   unitType: 0
   upgradeType: 0000000002000000
   health: 150
-  speed: 5
+  speed: 2.5
   attack: 25
   spawnTime: 4
   spawnTimeDecrease: 0.1

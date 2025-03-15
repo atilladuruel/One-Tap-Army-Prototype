@@ -1,10 +1,10 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class AIController : MonoBehaviour
 {
-    public int aiID = 1; // AI identifier
+    public int aiID;
     public Castle castle;
     public List<Unit> activeUnits = new List<Unit>();
     private UnitData selectedUnitData;
@@ -44,7 +44,10 @@ public class AIController : MonoBehaviour
         Unit unit = null;
         newUnit.TryGetComponent<Unit>(out unit);
         if (unit != null)
+        {
+            unit.Initialize(aiID); // Assign AI’s team ID
             activeUnits.Add(unit);
+        }
     }
 
     public void SelectUnit(UnitData newUnitData)

@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -53,7 +53,10 @@ public class PlayerController : MonoBehaviour
         Unit unit = null;
         newUnit.TryGetComponent<Unit>(out unit);
         if (unit != null)
+        {
+            unit.Initialize(playerID); // Call Initialize() with the player's ID
             activeUnits.Add(unit);
+        }
     }
 
     private void Update()

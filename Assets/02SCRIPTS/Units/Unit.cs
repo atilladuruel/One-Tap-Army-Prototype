@@ -1,13 +1,16 @@
 using UnityEngine.AI;
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 public class Unit : MonoBehaviour
 {
     public int playerID;
-    public Renderer unitRenderer;
+    public List<Renderer> unitRenderer;
     public NavMeshAgent agent;
     public UnitData unitData;
+
+    public Vector3 target;
 
     private int level = 1;
     private string unitName;
@@ -33,24 +36,24 @@ public class Unit : MonoBehaviour
     public int Health
     {
         get { return health; }
-        set { health = Math.Max(0, value); } // Saðlýk 0'ýn altýna düþmesin
+        set { health = Math.Max(0, value); } // Ensure health doesn't go below 0
     }
 
     public float Speed
     {
         get { return speed; }
-        set { speed = Math.Max(0, value); } // Hýz negatif olamaz
+        set { speed = Math.Max(0, value); } // Ensure speed isn't negative
     }
 
     public int AttackPower
     {
         get { return attackPower; }
-        set { attackPower = Math.Max(0, value); } // Saldýrý gücü negatif olamaz
+        set { attackPower = Math.Max(0, value); } // Ensure attack power isn't negative
     }
 
     private void Awake()
     {
-        if (unitData != null) // Eðer birim verisi atanmýþsa, baþlangýç deðerlerini set et
+        if (unitData != null) // Initialize unit stats from UnitData
         {
             unitName = unitData.unitName;
             health = unitData.health;
@@ -68,7 +71,7 @@ public class Unit : MonoBehaviour
     {
         currentState?.UpdateState(this);
 
-        // Eðer hedefe ulaþýldýysa, IdleState'e geç
+        // If unit reaches its destination, switch to IdleState
         if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
         {
             ChangeState(new IdleState());
@@ -84,8 +87,12 @@ public class Unit : MonoBehaviour
 
     public void MoveTo(Vector3 targetPosition)
     {
-        agent.SetDestination(targetPosition);
-        ChangeState(new MoveState(targetPosition));
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(targetPosition, out hit, 2f, NavMesh.AllAreas))
+        {
+            agent.SetDestination(hit.position);
+            ChangeState(new MoveState(hit.position));
+        }
     }
 
     /// <summary>
@@ -93,8 +100,8 @@ public class Unit : MonoBehaviour
     /// </summary>
     private void LevelUp()
     {
-        level++; // Level artýr
-        OnLevelUp?.Invoke(); // UI veya baþka sistemlere haber ver
+        level++; // Increase level
+        OnLevelUp?.Invoke(); // Notify UI or other systems
 
         Debug.Log($"{unitName} leveled up to {level}!");
     }
@@ -107,7 +114,6 @@ public class Unit : MonoBehaviour
         return level;
     }
 
-
     public void Initialize(int ownerID)
     {
         playerID = ownerID;
@@ -117,7 +123,10 @@ public class Unit : MonoBehaviour
     private void ApplyTeamColor()
     {
         Color teamColor = PlayerManager.Instance.GetPlayerByID(playerID).teamColor;
-        unitRenderer.material.color = teamColor;
+        foreach (var renderer in unitRenderer)
+        {
+            renderer.material.color = teamColor;
+        }
     }
 
     public bool IsEnemy(Unit other)
@@ -125,4 +134,29 @@ public class Unit : MonoBehaviour
         return playerID != other.playerID; // If they have different IDs, they are enemies
     }
 
+    /// <summary>
+    /// Takes damage from enemy attacks.
+    /// </summary>
+    public void TakeDamage(int damage)
+    {
+        if (health <= 0) return; // Already dead
+
+        health -= damage;
+
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    /// <summary>
+    /// Handles unit death and returns to Object Pool.
+    /// </summary>
+    private void Die()
+    {
+        Debug.Log($"{unitName} has been destroyed!");
+
+        // Return unit to Object Pool instead of disabling
+        ObjectPooler.Instance.ReturnUnit(gameObject);
+    }
 }

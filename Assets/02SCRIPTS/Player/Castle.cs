@@ -1,10 +1,13 @@
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
 public class Castle : MonoBehaviour
 {
     [SerializeField] private Transform _spawnPoint;
     public int playerID;
-    public Renderer castleRenderer;
+    public string ownerName; // ✅ Oyuncu veya AI ismi
+    public List<Renderer> castleRenderer;
     public Transform spawnPoint => _spawnPoint;
     public int level = 1;
     private int health = 3200;
@@ -18,10 +21,31 @@ public class Castle : MonoBehaviour
     private void ApplyTeamColor()
     {
         Color teamColor = PlayerManager.Instance.GetPlayerByID(playerID).teamColor;
-        castleRenderer.material.color = teamColor;
+        foreach (Renderer r in castleRenderer)
+        {
+            r.material.color = teamColor;
+        }
     }
 
+    /// <summary>
+    /// Kalenin hayatta olup olmadığını kontrol eder.
+    /// </summary>
+    public bool IsAlive()
+    {
+        return health > 0;
+    }
 
+    /// <summary>
+    /// Kalenin mevcut can değerini döndürür.
+    /// </summary>
+    public int GetHealth()
+    {
+        return health;
+    }
+
+    /// <summary>
+    /// Hasar alındığında çağrılır, kale yıkılırsa GameManager'a haber verir.
+    /// </summary>
     public void TakeDamage(int damage)
     {
         health -= damage;
@@ -32,17 +56,25 @@ public class Castle : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Kalenin seviyesini yükseltir.
+    /// </summary>
     public void LevelUp()
     {
         level++;
-        maxHealth += 500;  // Seviye ba��na ekstra can
-        //health = maxHealth;
-        Debug.Log("Castle leveled up to: " + level);
+        maxHealth += 500;  // Seviye başına ekstra can
+        health = maxHealth; // Yeni seviyede canı doldur
+        Debug.Log($"{ownerName}'s Castle leveled up to: {level}");
     }
 
-    public void DestroyCastle()
+    /// <summary>
+    /// Kale yıkıldığında çağrılır, GameManager'a haber verir.
+    /// </summary>
+    private void DestroyCastle()
     {
-        Debug.Log("Castle has been destroyed!");
-        // Burada oyunu bitirme veya di�er oyuncuya zafer kazand�rma i�lemleri eklenebilir.
+        Debug.Log($"{ownerName}'s Castle has been destroyed!");
+
+        gameObject.SetActive(false); // Kalenin yok olduğunu göster
+        GameManager.Instance.CheckGameOver(); // GameManager'a bildir
     }
 }
