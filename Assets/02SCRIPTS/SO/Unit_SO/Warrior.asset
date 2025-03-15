@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f9381db19f33b84ba3eee32108f5f26, type: 3}
   m_Name: Warrior
   m_EditorClassIdentifier: 
-  unitName: 
-  unitType: 0
-  upgradeType: 
-  health: 0
-  speed: 0
-  attack: 0
+  unitName: Warrior
+  unitType: 2
+  upgradeType: 0000000002000000
+  health: 200
+  speed: 4
+  attack: 30
+  spawnTime: 5.5
+  spawnTimeDecrease: 0.15

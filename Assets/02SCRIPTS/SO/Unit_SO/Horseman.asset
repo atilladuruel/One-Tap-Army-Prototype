@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f9381db19f33b84ba3eee32108f5f26, type: 3}
   m_Name: Horseman
   m_EditorClassIdentifier: 
-  unitName: 
-  unitType: 0
-  upgradeType: 
-  health: 0
-  speed: 0
-  attack: 0
+  unitName: Horseman
+  unitType: 3
+  upgradeType: 0000000002000000
+  health: 120
+  speed: 7.5
+  attack: 20
+  spawnTime: 4.5
+  spawnTimeDecrease: 0.15
