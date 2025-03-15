@@ -4,6 +4,8 @@ using System;
 
 public class Unit : MonoBehaviour
 {
+    public int playerID;
+    public Renderer unitRenderer;
     public NavMeshAgent agent;
     public UnitData unitData;
 
@@ -104,4 +106,23 @@ public class Unit : MonoBehaviour
     {
         return level;
     }
+
+
+    public void Initialize(int ownerID)
+    {
+        playerID = ownerID;
+        ApplyTeamColor();
+    }
+
+    private void ApplyTeamColor()
+    {
+        Color teamColor = PlayerManager.Instance.GetPlayerByID(playerID).teamColor;
+        unitRenderer.material.color = teamColor;
+    }
+
+    public bool IsEnemy(Unit other)
+    {
+        return playerID != other.playerID; // If they have different IDs, they are enemies
+    }
+
 }

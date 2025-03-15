@@ -11,7 +11,7 @@ public class HUD : MonoBehaviour
 
     private void Start()
     {
-        playerUnit = FindObjectOfType<Unit>();
+        playerUnit = FindFirstObjectByType<Unit>();
         UpdateHUD();
 
         if (playerUnit != null)

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -13,11 +13,18 @@ public class GameManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+
+            // Ensure GameManager is a root object before making it persistent
+            if (transform.parent != null)
+            {
+                transform.SetParent(null);
+            }
+
+            DontDestroyOnLoad(gameObject); 
         }
         else
         {
-            Destroy(gameObject);
+            Destroy(gameObject); // Prevent duplicate GameManager instances
         }
     }
 

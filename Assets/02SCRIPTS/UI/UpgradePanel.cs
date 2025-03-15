@@ -51,7 +51,7 @@ public class UpgradePanel : MonoBehaviour
     /// </summary>
     private void ApplyUpgrade(UnitData upgrade)
     {
-        Unit playerUnit = FindObjectOfType<Unit>();
+        Unit playerUnit = FindFirstObjectByType<Unit>();
         if (playerUnit != null)
         {
             UpgradeManager.Instance.ApplyUpgrade(upgrade, playerUnit);

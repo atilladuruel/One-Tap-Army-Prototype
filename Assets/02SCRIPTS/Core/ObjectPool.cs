@@ -11,7 +11,7 @@ public class ObjectPooler : MonoBehaviour
         {
             if (_instance == null)
             {
-                _instance = FindObjectOfType<ObjectPooler>();
+                _instance = FindFirstObjectByType<ObjectPooler>();
             }
             return _instance;
         }

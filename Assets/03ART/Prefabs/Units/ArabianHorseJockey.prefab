@@ -64,12 +64,27 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -6007536931248748585, guid: 24b86ffea32384141bb03451ff088f58, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 8941caaca5a9c0f4fb0c1bc98e9ed442, type: 2}
+    - target: {fileID: -3466856619500761722, guid: 24b86ffea32384141bb03451ff088f58, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 8941caaca5a9c0f4fb0c1bc98e9ed442, type: 2}
     - target: {fileID: 919132149155446097, guid: 24b86ffea32384141bb03451ff088f58, type: 3}
       propertyPath: m_Name
       value: ArabianHorseJockey
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    - target: {fileID: 7413682360271029374, guid: 24b86ffea32384141bb03451ff088f58, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: -1681186345446134585, guid: 24b86ffea32384141bb03451ff088f58, type: 3}
+    m_RemovedComponents:
+    - {fileID: -5144361945402142534, guid: 24b86ffea32384141bb03451ff088f58, type: 3}
+    - {fileID: -1771216564546194796, guid: 24b86ffea32384141bb03451ff088f58, type: 3}
+    m_RemovedGameObjects:
+    - {fileID: -5258440736698270357, guid: 24b86ffea32384141bb03451ff088f58, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 24b86ffea32384141bb03451ff088f58, type: 3}

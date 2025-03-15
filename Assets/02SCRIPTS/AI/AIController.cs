@@ -110,7 +110,7 @@ public class AIController : MonoBehaviour
     /// </summary>
     private Vector3 FindAttackPosition()
     {
-        Castle enemyCastle = FindObjectOfType<PlayerController>().castle;
+        Castle enemyCastle = FindFirstObjectByType<PlayerController>().castle;
 
         if (enemyCastle != null)
         {
