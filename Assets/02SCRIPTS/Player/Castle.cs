@@ -3,6 +3,7 @@ using UnityEngine;
 public class Castle : MonoBehaviour
 {
     [SerializeField] private Transform _spawnPoint;
+    public Transform spawnPoint => _spawnPoint;
     public int level = 1;
     private int health = 3200;
     private int maxHealth = 3200;

@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
     private Coroutine spawnRoutine;
 
     [Header("Default Unit")]
-    public UnitData defaultUnit; // Oyun baþladýðýnda ilk spawnlanacak unit
+    public UnitData defaultUnit; // The default unit to be spawned at game start
 
     private void Awake()
     {
@@ -29,11 +29,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void Initialize(Transform spawnPosition)
-    {
-        transform.position = spawnPosition.position;
-    }
-
     /// <summary>
     /// Spawns a unit of the selected type at the castle's spawn point.
     /// </summary>
@@ -41,7 +36,20 @@ public class PlayerController : MonoBehaviour
     {
         if (selectedUnitData == null || GameManager.Instance.isGameOver) return;
 
+        // Get the spawn position from the castle
+        Vector3 spawnPosition = castle.spawnPoint.position;
+        Quaternion spawnRotation = Quaternion.identity;
+
+        // Add slight random offset to prevent unit overlap
+        Vector3 randomOffset = new Vector3(Random.Range(-0.5f, 0.5f), 0, Random.Range(-0.5f, 0.5f));
+        spawnPosition += randomOffset;
+
+        // Get a unit from the object pool and set its position
         GameObject newUnit = ObjectPooler.Instance.GetUnit(selectedUnitData.unitType);
+        newUnit.transform.position = spawnPosition;
+        newUnit.transform.rotation = spawnRotation;
+
+        // Add the unit to the active list
         Unit unit = null;
         newUnit.TryGetComponent<Unit>(out unit);
         if (unit != null)
@@ -79,11 +87,11 @@ public class PlayerController : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit))
         {
-            if (hit.collider.CompareTag("Unit")) // If a unit is tapped/clicked, select it
+            if (hit.collider.CompareTag("Unit")) // Select a unit if clicked/tapped
             {
                 SelectUnit(hit.collider.GetComponent<Unit>().unitData);
             }
-            else if (selectedUnitData != null) // If ground is tapped/clicked, move units
+            else if (selectedUnitData != null) // If ground is clicked, move units in formation
             {
                 MoveSelectedUnits(hit.point);
             }
@@ -100,16 +108,16 @@ public class PlayerController : MonoBehaviour
 
         selectedUnitData = newUnitData;
 
-        // Eðer zaten bir spawn süreci çalýþýyorsa durdur
+        // Stop the previous spawn routine if it's running
         if (spawnRoutine != null)
             StopCoroutine(spawnRoutine);
 
-        // Yeni spawn sürecini baþlat
+        // Start spawning the selected unit continuously
         spawnRoutine = StartCoroutine(SpawnSelectedUnitContinuously());
     }
 
     /// <summary>
-    /// Spawns the selected unit at regular intervals.
+    /// Continuously spawns the selected unit type at regular intervals.
     /// </summary>
     private IEnumerator SpawnSelectedUnitContinuously()
     {
@@ -121,17 +129,74 @@ public class PlayerController : MonoBehaviour
     }
 
     /// <summary>
-    /// Moves all selected units to the given target position.
+    /// Moves all selected units to a formation around the given target position.
     /// </summary>
     public void MoveSelectedUnits(Vector3 targetPosition)
     {
-        foreach (Unit unit in activeUnits)
+        if (activeUnits.Count == 0) return;
+
+        List<Vector3> formationPositions;
+
+        // Choose the formation type dynamically
+        if (activeUnits.Count > 5)
+            formationPositions = GetGridFormation(targetPosition, activeUnits.Count);
+        else
+            formationPositions = GetFormationPositions(targetPosition, activeUnits.Count);
+
+        for (int i = 0; i < activeUnits.Count; i++)
         {
-            if (unit != null)
+            if (activeUnits[i] != null)
             {
-                unit.MoveTo(targetPosition);
+                activeUnits[i].MoveTo(formationPositions[i]); // Move each unit to its designated spot
             }
         }
+    }
+
+    /// <summary>
+    /// Generates a circular formation around the target position.
+    /// </summary>
+    private List<Vector3> GetFormationPositions(Vector3 targetPosition, int unitCount)
+    {
+        List<Vector3> positions = new List<Vector3>();
+        float radius = 1.0f; // Distance from the center
+        float angleStep = 360f / unitCount; // Spread units evenly in a circle
+
+        for (int i = 0; i < unitCount; i++)
+        {
+            float angle = i * angleStep;
+            float x = targetPosition.x + radius * Mathf.Cos(angle * Mathf.Deg2Rad);
+            float z = targetPosition.z + radius * Mathf.Sin(angle * Mathf.Deg2Rad);
+            positions.Add(new Vector3(x, targetPosition.y, z));
+        }
+
+        return positions;
+    }
+
+    /// <summary>
+    /// Generates a grid formation around the target position.
+    /// </summary>
+    private List<Vector3> GetGridFormation(Vector3 targetPosition, int unitCount, int rowSize = 3, float spacing = .5f)
+    {
+        List<Vector3> positions = new List<Vector3>();
+
+        int rows = Mathf.CeilToInt((float)unitCount / rowSize);
+        int cols = Mathf.Min(unitCount, rowSize);
+        int index = 0;
+
+        for (int r = 0; r < rows; r++)
+        {
+            for (int c = 0; c < cols; c++)
+            {
+                if (index >= unitCount) break;
+
+                float x = targetPosition.x + (c - (cols / 2)) * spacing;
+                float z = targetPosition.z + (r - (rows / 2)) * spacing;
+                positions.Add(new Vector3(x, targetPosition.y, z));
+
+                index++;
+            }
+        }
+        return positions;
     }
 
     /// <summary>
