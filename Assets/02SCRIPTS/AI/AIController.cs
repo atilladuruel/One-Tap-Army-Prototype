@@ -37,7 +37,7 @@ public class AIController : MonoBehaviour
         Vector3 randomOffset = new Vector3(Random.Range(-0.5f, 0.5f), 0, Random.Range(-0.5f, 0.5f));
         spawnPosition += randomOffset;
 
-        GameObject newUnit = ObjectPooler.Instance.GetUnit(selectedUnitData.unitType);
+        GameObject newUnit = ObjectPooler.Instance.GetUnit(selectedUnitData.unitType, spawnPosition);
         newUnit.transform.position = spawnPosition;
         newUnit.transform.rotation = spawnRotation;
 
@@ -169,7 +169,7 @@ public class AIController : MonoBehaviour
     /// <summary>
     /// Generates a grid formation around the target position.
     /// </summary>
-    private List<Vector3> GetGridFormation(Vector3 targetPosition, int unitCount, int rowSize = 3, float spacing = 2.0f)
+    private List<Vector3> GetGridFormation(Vector3 targetPosition, int unitCount, int rowSize = 3, float spacing = 0.5f)
     {
         List<Vector3> positions = new List<Vector3>();
 

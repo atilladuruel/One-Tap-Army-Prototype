@@ -45,7 +45,7 @@ public class PlayerController : MonoBehaviour
         spawnPosition += randomOffset;
 
         // Get a unit from the object pool and set its position
-        GameObject newUnit = ObjectPooler.Instance.GetUnit(selectedUnitData.unitType);
+        GameObject newUnit = ObjectPooler.Instance.GetUnit(selectedUnitData.unitType, spawnPosition);
         newUnit.transform.position = spawnPosition;
         newUnit.transform.rotation = spawnRotation;
 

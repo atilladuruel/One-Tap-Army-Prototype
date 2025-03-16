@@ -419,11 +419,6 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: -711837798414525859}
   m_SourcePrefab: {fileID: 100100000, guid: 24b86ffea32384141bb03451ff088f58, type: 3}
---- !u!137 &4238713145662450772 stripped
-SkinnedMeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 7413682360271029374, guid: 24b86ffea32384141bb03451ff088f58, type: 3}
-  m_PrefabInstance: {fileID: 6642914961585989674}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &5832502537218479483 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 24b86ffea32384141bb03451ff088f58, type: 3}
@@ -486,7 +481,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerID: 0
-  unitRenderer: {fileID: 4238713145662450772}
+  unitRenderer:
+  - {fileID: 0}
   agent: {fileID: -6677711983008426272}
   unitData: {fileID: 11400000, guid: 5c91c3f95fa115048b455ed1f1c5b4da, type: 2}
   target: {x: 0, y: 0, z: 0}
@@ -514,5 +510,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ee3f235c3adde5468d656637548125b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRange: 0.5
+  attackRange: 1
+  rangedAttackRange: 3
+  awarenessRange: 5
   attackCooldown: 1.5
+  arrowPrefab: {fileID: 0}
+  firePoint: {fileID: 0}

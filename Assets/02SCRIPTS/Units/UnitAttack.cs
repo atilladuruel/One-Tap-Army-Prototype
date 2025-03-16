@@ -4,8 +4,9 @@ public class UnitAttack : MonoBehaviour
 {
     private Unit unit;
     private int damage;
-    public float attackRange = 3f; // Melee attack range
-    public float rangedAttackRange = 12f; // Archer's ranged attack range
+    public float attackRange = 1f; // Melee attack range
+    public float rangedAttackRange = 3f; // Archer's ranged attack range
+    public float awarenessRange = 5f; // Archer's ranged attack range
     public float attackCooldown = 1.5f;
     private float lastAttackTime = 0f;
     public GameObject arrowPrefab; // Projectile for ranged attack
@@ -34,9 +35,9 @@ public class UnitAttack : MonoBehaviour
 
     private void FindAndAttackEnemy()
     {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, rangedAttackRange, LayerMask.GetMask("Unit"));
+        Collider[] colliders = Physics.OverlapSphere(transform.position, awarenessRange, LayerMask.GetMask("Unit"));
 
-        Debug.Log($"{unit.UnitName} is scanning for enemies, found: {colliders.Length}");
+        //Debug.Log($"{unit.UnitName} is scanning for enemies, found: {colliders.Length}");
 
         foreach (Collider col in colliders)
         {

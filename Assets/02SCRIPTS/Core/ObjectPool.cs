@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI; 
 
 // Object Pooler for Units
 public class ObjectPooler : MonoBehaviour
@@ -67,25 +68,24 @@ public class ObjectPooler : MonoBehaviour
         }
     }
 
-
     /// <summary>
-    /// Retrieves a unit of the requested type from the pool, or instantiates a new one if needed.
+    /// Retrieves a unit of the requested type from the pool, places it on the nearest NavMesh, or instantiates a new one if needed.
     /// </summary>
-    public GameObject GetUnit(UnitType unitType)
+    public GameObject GetUnit(UnitType unitType, Vector3 spawnPosition)
     {
+        GameObject unit;
+
         if (unitPools.ContainsKey(unitType) && unitPools[unitType].Count > 0)
         {
-            GameObject unit = unitPools[unitType].Dequeue();
+            unit = unitPools[unitType].Dequeue();
             unit.SetActive(true);
-            return unit;
         }
         else
         {
-            // Find the correct unit prefab
             GameObject prefab = unitPrefabs.Find(p => p.GetComponent<Unit>().unitData.unitType == unitType);
             if (prefab != null)
             {
-                return Instantiate(prefab);
+                unit = Instantiate(prefab);
             }
             else
             {
@@ -93,6 +93,19 @@ public class ObjectPooler : MonoBehaviour
                 return null;
             }
         }
+
+        // Ensure the unit is placed on the closest valid NavMesh position
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(spawnPosition, out hit, 5f, NavMesh.AllAreas))
+        {
+            unit.transform.position = hit.position;
+        }
+        else
+        {
+            Debug.LogError($"Failed to find a valid NavMesh position near {spawnPosition} for unit {unit.name}");
+        }
+
+        return unit;
     }
 
     /// <summary>

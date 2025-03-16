@@ -478,8 +478,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ee3f235c3adde5468d656637548125b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRange: 0.5
+  attackRange: 1
+  rangedAttackRange: 3
+  awarenessRange: 5
   attackCooldown: 1.5
+  arrowPrefab: {fileID: 0}
+  firePoint: {fileID: 0}
 --- !u!136 &-905209197351275943
 CapsuleCollider:
   m_ObjectHideFlags: 0

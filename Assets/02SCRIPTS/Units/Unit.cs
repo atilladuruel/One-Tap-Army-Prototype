@@ -90,7 +90,7 @@ public class Unit : MonoBehaviour
         NavMeshHit hit;
         if (NavMesh.SamplePosition(targetPosition, out hit, 2f, NavMesh.AllAreas))
         {
-            agent.SetDestination(hit.position);
+            //agent.SetDestination(hit.position);
             ChangeState(new MoveState(hit.position));
         }
     }
