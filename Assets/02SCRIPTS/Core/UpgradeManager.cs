@@ -1,46 +1,52 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Game.Units;
+using Game.Scriptables;
 
-public class UpgradeManager : MonoBehaviour
+namespace Game.Core
 {
-    public static UpgradeManager Instance;
 
-    [SerializeField] private List<UnitData> availableUpgrades;
-
-    public event Action OnUpgradeApplied;
-
-    private void Awake()
+    public class UpgradeManager : MonoBehaviour
     {
-        if (Instance == null)
-            Instance = this;
-        else
-            Destroy(gameObject);
-    }
+        public static UpgradeManager Instance;
 
-    public void ApplyUpgrade(UnitData upgrade, Unit unit)
-    {
-        if (unit == null || upgrade == null) return;
+        [SerializeField] private List<UnitData> availableUpgrades;
 
-        //switch (upgrade.upgradeType)
-        //{
-        //    case Stats.Health:
-        //        unit.health += upgrade.effectValue;
-        //        break;
-        //    case Stats.Speed:
-        //        unit.speed += upgrade.effectValue;
-        //        unit.agent.speed = unit.speed; // Apply new speed to NavMeshAgent
-        //        break;
-        //    case Stats.Attack:
-        //        unit.attackPower += upgrade.effectValue;
-        //        break;
-        //}
+        public event Action OnUpgradeApplied;
 
-        OnUpgradeApplied?.Invoke(); // Notify UI or other systems
-    }
+        private void Awake()
+        {
+            if (Instance == null)
+                Instance = this;
+            else
+                Destroy(gameObject);
+        }
 
-    public List<UnitData> GetAvailableUpgrades()
-    {
-        return availableUpgrades;
+        public void ApplyUpgrade(UnitData upgrade, Unit unit)
+        {
+            if (unit == null || upgrade == null) return;
+
+            //switch (upgrade.upgradeType)
+            //{
+            //    case Stats.Health:
+            //        unit.health += upgrade.effectValue;
+            //        break;
+            //    case Stats.Speed:
+            //        unit.speed += upgrade.effectValue;
+            //        unit.agent.speed = unit.speed; // Apply new speed to NavMeshAgent
+            //        break;
+            //    case Stats.Attack:
+            //        unit.attackPower += upgrade.effectValue;
+            //        break;
+            //}
+
+            OnUpgradeApplied?.Invoke(); // Notify UI or other systems
+        }
+
+        public List<UnitData> GetAvailableUpgrades()
+        {
+            return availableUpgrades;
+        }
     }
 }

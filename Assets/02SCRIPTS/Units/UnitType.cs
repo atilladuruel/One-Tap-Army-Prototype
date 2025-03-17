@@ -1,8 +1,11 @@
-public enum UnitType
+namespace Game.Units
 {
-    Swordsman,
-    Archer,
-    Warrior,
-    Horseman,
-    Giant
+    public enum UnitType
+    {
+        Swordsman,
+        Archer,
+        Warrior,
+        Horseman,
+        Giant
+    }
 }

@@ -1,24 +1,27 @@
-using UnityEngine;
+using Game.Units.States;
 
-public class UnitStateMachine
+namespace Game.Units
 {
-    private IUnitState currentState;
-    private Unit unit;
-
-    public UnitStateMachine(Unit unit)
+    public class UnitStateMachine
     {
-        this.unit = unit;
-    }
+        private IUnitState currentState;
+        private Unit unit;
 
-    public void ChangeState(IUnitState newState)
-    {
-        currentState?.ExitState();
-        currentState = newState;
-        currentState.EnterState(unit);
-    }
+        public UnitStateMachine(Unit unit)
+        {
+            this.unit = unit;
+        }
 
-    public void Update()
-    {
-        currentState?.UpdateState(unit);
+        public void ChangeState(IUnitState newState)
+        {
+            currentState?.ExitState();
+            currentState = newState;
+            currentState.EnterState(unit);
+        }
+
+        public void Update()
+        {
+            currentState?.UpdateState(unit);
+        }
     }
 }

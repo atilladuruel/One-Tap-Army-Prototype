@@ -2,36 +2,40 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EventManager : MonoBehaviour
+namespace Game.Core
 {
-    private Dictionary<string, Action> eventDictionary = new Dictionary<string, Action>();
-    public static EventManager Instance;
 
-    private void Awake()
+    public class EventManager : MonoBehaviour
     {
-        if (Instance == null)
-            Instance = this;
-        else
-            Destroy(gameObject);
-    }
+        private Dictionary<string, Action> eventDictionary = new Dictionary<string, Action>();
+        public static EventManager Instance;
 
-    public void Subscribe(string eventName, Action listener)
-    {
-        if (!eventDictionary.ContainsKey(eventName))
-            eventDictionary[eventName] = listener;
-        else
-            eventDictionary[eventName] += listener;
-    }
+        private void Awake()
+        {
+            if (Instance == null)
+                Instance = this;
+            else
+                Destroy(gameObject);
+        }
 
-    public void Unsubscribe(string eventName, Action listener)
-    {
-        if (eventDictionary.ContainsKey(eventName))
-            eventDictionary[eventName] -= listener;
-    }
+        public void Subscribe(string eventName, Action listener)
+        {
+            if (!eventDictionary.ContainsKey(eventName))
+                eventDictionary[eventName] = listener;
+            else
+                eventDictionary[eventName] += listener;
+        }
 
-    public void TriggerEvent(string eventName)
-    {
-        if (eventDictionary.ContainsKey(eventName))
-            eventDictionary[eventName]?.Invoke();
+        public void Unsubscribe(string eventName, Action listener)
+        {
+            if (eventDictionary.ContainsKey(eventName))
+                eventDictionary[eventName] -= listener;
+        }
+
+        public void TriggerEvent(string eventName)
+        {
+            if (eventDictionary.ContainsKey(eventName))
+                eventDictionary[eventName]?.Invoke();
+        }
     }
 }

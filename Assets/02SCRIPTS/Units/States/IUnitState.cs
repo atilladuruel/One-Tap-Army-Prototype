@@ -1,7 +1,10 @@
-// Interface for Unit States
-public interface IUnitState
+namespace Game.Units.States
 {
-    void EnterState(Unit unit);
-    void UpdateState(Unit unit);
-    void ExitState();
+    // Interface for Unit States
+    public interface IUnitState
+    {
+        void EnterState(Unit unit);
+        void UpdateState(Unit unit);
+        void ExitState();
+    }
 }

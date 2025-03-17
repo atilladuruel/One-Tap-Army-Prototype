@@ -1,42 +1,47 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Game.Units;
 
-public class HUD : MonoBehaviour
+namespace Game.UI
 {
-    [SerializeField] private Text healthText;
-    [SerializeField] private Text xpText;
-    [SerializeField] private Text levelText;
-    [SerializeField] private GameObject upgradeNotification;
-    private Unit playerUnit;
 
-    private void Start()
+    public class HUD : MonoBehaviour
     {
-        playerUnit = FindFirstObjectByType<Unit>();
-        UpdateHUD();
+        [SerializeField] private Text healthText;
+        [SerializeField] private Text xpText;
+        [SerializeField] private Text levelText;
+        [SerializeField] private GameObject upgradeNotification;
+        private Unit playerUnit;
 
-        if (playerUnit != null)
+        private void Start()
         {
-            playerUnit.OnLevelUp += UpdateHUD; // Level up event listener
+            playerUnit = FindFirstObjectByType<Unit>();
+            UpdateHUD();
+
+            if (playerUnit != null)
+            {
+                playerUnit.OnLevelUp += UpdateHUD; // Level up event listener
+            }
         }
-    }
 
 
-    /// <summary>
-    /// Updates the UI elements based on the player's unit stats.
-    /// </summary>
-    private void UpdateHUD()
-    {
-        if (playerUnit == null) return;
+        /// <summary>
+        /// Updates the UI elements based on the player's unit stats.
+        /// </summary>
+        private void UpdateHUD()
+        {
+            if (playerUnit == null) return;
 
-        healthText.text = $"Health: {playerUnit.Health}";
-        levelText.text = $"Level: {playerUnit.GetLevel()}"; // Assuming GetLevel() is implemented
-    }
+            healthText.text = $"Health: {playerUnit.Health}";
+            levelText.text = $"Level: {playerUnit.GetLevel()}"; // Assuming GetLevel() is implemented
+        }
 
-    /// <summary>
-    /// Displays an upgrade notification when an upgrade is available.
-    /// </summary>
-    public void ShowUpgradeNotification(bool show)
-    {
-        upgradeNotification.SetActive(show);
+        /// <summary>
+        /// Displays an upgrade notification when an upgrade is available.
+        /// </summary>
+        public void ShowUpgradeNotification(bool show)
+        {
+            upgradeNotification.SetActive(show);
+        }
     }
 }

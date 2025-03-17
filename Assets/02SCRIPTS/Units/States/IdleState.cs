@@ -1,7 +1,15 @@
-// Unit States
-public class IdleState : IUnitState
+using UnityEngine;
+namespace Game.Units.States
 {
-    public void EnterState(Unit unit) { }
-    public void UpdateState(Unit unit) { }
-    public void ExitState() { }
+    // Unit States
+    public class IdleState : IUnitState
+    {
+        public void EnterState(Unit unit)
+        {
+            unit.PlayAnimation("Idle"); // Play Idle animation
+            Debug.Log($"{unit.name} has entered Idle State.");
+        }
+        public void UpdateState(Unit unit) { }
+        public void ExitState() { }
+    }
 }

@@ -1223,7 +1223,7 @@ Animator:
   m_GameObject: {fileID: 7661008358379543433}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: d5a11d521fed3354ca5d0426460064ff, type: 2}
+  m_Controller: {fileID: 9100000, guid: bc41c632ecec97a4691da903d50f76fd, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1255,6 +1255,7 @@ MonoBehaviour:
   - {fileID: 5067924791559553796}
   agent: {fileID: 8696789978137915901}
   unitData: {fileID: 11400000, guid: 8abbd26a1c2788b428358ba1e6b55dc8, type: 2}
+  animator: {fileID: 0}
   target: {x: 0, y: 0, z: 0}
 --- !u!114 &3030660454418482309
 MonoBehaviour:

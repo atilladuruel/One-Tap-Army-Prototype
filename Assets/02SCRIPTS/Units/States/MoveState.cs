@@ -1,25 +1,29 @@
+using TMPro;
 using UnityEngine;
-
-public class MoveState : IUnitState
+using UnityEngine.AI;
+namespace Game.Units.States
 {
-    private Vector3 target;
-    public MoveState(Vector3 targetPosition)
+    public class MoveState : IUnitState
     {
-        target = targetPosition;
-    }
-    public void EnterState(Unit unit)
-    {
-        if (unit.agent != null)
+        private Vector3 target;
+        public MoveState(Vector3 targetPosition)
         {
-            unit.agent.SetDestination(target);
+            target = targetPosition;
         }
-    }
-    public void UpdateState(Unit unit)
-    {
-        if (unit.agent != null && !unit.agent.pathPending && unit.agent.remainingDistance <= unit.agent.stoppingDistance)
+        public void EnterState(Unit unit)
         {
-            unit.ChangeState(new IdleState());
+            unit.PlayAnimation("Run"); 
+            unit.GetComponent<NavMeshAgent>().SetDestination(target);
         }
+        public void UpdateState(Unit unit)
+        {
+            NavMeshAgent agent = unit.GetComponent<NavMeshAgent>();
+
+            if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
+            {
+                unit.ChangeState(new IdleState());
+            }
+        }
+        public void ExitState() { }
     }
-    public void ExitState() { }
 }

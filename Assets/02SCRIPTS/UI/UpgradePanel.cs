@@ -1,61 +1,67 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Game.Units;
+using Game.Scriptables;
+using Game.Core;
 
-public class UpgradePanel : MonoBehaviour
+namespace Game.UI
 {
-    [SerializeField] private GameObject upgradePanel;
-    [SerializeField] private Button[] upgradeButtons;
-    private List<UnitData> availableUpgrades;
-
-    private void Start()
+    public class UpgradePanel : MonoBehaviour
     {
-        HideUpgradePanel();
-    }
+        [SerializeField] private GameObject upgradePanel;
+        [SerializeField] private Button[] upgradeButtons;
+        private List<UnitData> availableUpgrades;
 
-    /// <summary>
-    /// Displays upgrade choices to the player.
-    /// </summary>
-    public void ShowUpgradePanel()
-    {
-        availableUpgrades = UpgradeManager.Instance.GetAvailableUpgrades();
-        upgradePanel.SetActive(true);
-
-        for (int i = 0; i < upgradeButtons.Length; i++)
+        private void Start()
         {
-            if (i < availableUpgrades.Count)
+            HideUpgradePanel();
+        }
+
+        /// <summary>
+        /// Displays upgrade choices to the player.
+        /// </summary>
+        public void ShowUpgradePanel()
+        {
+            availableUpgrades = UpgradeManager.Instance.GetAvailableUpgrades();
+            upgradePanel.SetActive(true);
+
+            for (int i = 0; i < upgradeButtons.Length; i++)
             {
-                upgradeButtons[i].gameObject.SetActive(true);
-                //upgradeButtons[i].GetComponentInChildren<Text>().text = availableUpgrades[i].upgradeName;
-                int index = i;
-                upgradeButtons[i].onClick.RemoveAllListeners();
-                upgradeButtons[i].onClick.AddListener(() => ApplyUpgrade(availableUpgrades[index]));
-            }
-            else
-            {
-                upgradeButtons[i].gameObject.SetActive(false);
+                if (i < availableUpgrades.Count)
+                {
+                    upgradeButtons[i].gameObject.SetActive(true);
+                    //upgradeButtons[i].GetComponentInChildren<Text>().text = availableUpgrades[i].upgradeName;
+                    int index = i;
+                    upgradeButtons[i].onClick.RemoveAllListeners();
+                    upgradeButtons[i].onClick.AddListener(() => ApplyUpgrade(availableUpgrades[index]));
+                }
+                else
+                {
+                    upgradeButtons[i].gameObject.SetActive(false);
+                }
             }
         }
-    }
 
-    /// <summary>
-    /// Hides the upgrade panel.
-    /// </summary>
-    public void HideUpgradePanel()
-    {
-        upgradePanel.SetActive(false);
-    }
-
-    /// <summary>
-    /// Applies the selected upgrade and updates the UI.
-    /// </summary>
-    private void ApplyUpgrade(UnitData upgrade)
-    {
-        Unit playerUnit = FindFirstObjectByType<Unit>();
-        if (playerUnit != null)
+        /// <summary>
+        /// Hides the upgrade panel.
+        /// </summary>
+        public void HideUpgradePanel()
         {
-            UpgradeManager.Instance.ApplyUpgrade(upgrade, playerUnit);
+            upgradePanel.SetActive(false);
         }
-        HideUpgradePanel();
+
+        /// <summary>
+        /// Applies the selected upgrade and updates the UI.
+        /// </summary>
+        private void ApplyUpgrade(UnitData upgrade)
+        {
+            Unit playerUnit = FindFirstObjectByType<Unit>();
+            if (playerUnit != null)
+            {
+                UpgradeManager.Instance.ApplyUpgrade(upgrade, playerUnit);
+            }
+            HideUpgradePanel();
+        }
     }
 }

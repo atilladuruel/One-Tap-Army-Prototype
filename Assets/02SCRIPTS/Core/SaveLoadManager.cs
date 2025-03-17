@@ -1,23 +1,26 @@
 using UnityEngine;
 using System.IO;
 
-public class SaveLoadManager
+namespace Game.Core
 {
-    public static void SaveData<T>(string fileName, T data)
+    public class SaveLoadManager
     {
-        string path = Application.persistentDataPath + "/" + fileName + ".json";
-        string json = JsonUtility.ToJson(data, true);
-        File.WriteAllText(path, json);
-    }
-
-    public static T LoadData<T>(string fileName)
-    {
-        string path = Application.persistentDataPath + "/" + fileName + ".json";
-        if (File.Exists(path))
+        public static void SaveData<T>(string fileName, T data)
         {
-            string json = File.ReadAllText(path);
-            return JsonUtility.FromJson<T>(json);
+            string path = Application.persistentDataPath + "/" + fileName + ".json";
+            string json = JsonUtility.ToJson(data, true);
+            File.WriteAllText(path, json);
         }
-        return default;
+
+        public static T LoadData<T>(string fileName)
+        {
+            string path = Application.persistentDataPath + "/" + fileName + ".json";
+            if (File.Exists(path))
+            {
+                string json = File.ReadAllText(path);
+                return JsonUtility.FromJson<T>(json);
+            }
+            return default;
+        }
     }
 }

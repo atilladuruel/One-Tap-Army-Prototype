@@ -1,47 +1,50 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class MainMenu : MonoBehaviour
+namespace Game.UI
 {
-    [SerializeField] private GameObject mainMenuPanel;
-    [SerializeField] private GameObject settingsPanel;
-
-    private void Start()
+    public class MainMenu : MonoBehaviour
     {
-        ShowMainMenu();
-    }
+        [SerializeField] private GameObject mainMenuPanel;
+        [SerializeField] private GameObject settingsPanel;
 
-    /// <summary>
-    /// Loads the main game scene.
-    /// </summary>
-    public void StartGame()
-    {
-        SceneManager.LoadScene("Level1"); // Ensure the correct scene name
-    }
+        private void Start()
+        {
+            ShowMainMenu();
+        }
 
-    /// <summary>
-    /// Shows the main menu panel and hides other UI elements.
-    /// </summary>
-    public void ShowMainMenu()
-    {
-        mainMenuPanel.SetActive(true);
-        settingsPanel.SetActive(false);
-    }
+        /// <summary>
+        /// Loads the main game scene.
+        /// </summary>
+        public void StartGame()
+        {
+            SceneManager.LoadScene("Level1"); // Ensure the correct scene name
+        }
 
-    /// <summary>
-    /// Shows the settings panel.
-    /// </summary>
-    public void ShowSettings()
-    {
-        mainMenuPanel.SetActive(false);
-        settingsPanel.SetActive(true);
-    }
+        /// <summary>
+        /// Shows the main menu panel and hides other UI elements.
+        /// </summary>
+        public void ShowMainMenu()
+        {
+            mainMenuPanel.SetActive(true);
+            settingsPanel.SetActive(false);
+        }
 
-    /// <summary>
-    /// Quits the application.
-    /// </summary>
-    public void QuitGame()
-    {
-        Application.Quit();
+        /// <summary>
+        /// Shows the settings panel.
+        /// </summary>
+        public void ShowSettings()
+        {
+            mainMenuPanel.SetActive(false);
+            settingsPanel.SetActive(true);
+        }
+
+        /// <summary>
+        /// Quits the application.
+        /// </summary>
+        public void QuitGame()
+        {
+            Application.Quit();
+        }
     }
 }

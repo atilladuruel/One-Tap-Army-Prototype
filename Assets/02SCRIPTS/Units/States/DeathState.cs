@@ -1,12 +1,19 @@
+using Game.Core;
 using UnityEngine;
-
-public class DeathState : IUnitState
+namespace Game.Units.States
 {
-    public void EnterState(Unit unit)
+    public class DeathState : IUnitState
     {
-        unit.gameObject.SetActive(false);
-        ObjectPooler.Instance?.ReturnUnit(unit.gameObject);
+        public void EnterState(Unit unit)
+        {
+            unit.PlayAnimation("Death");
+            Debug.Log($"{unit.name} has died.");
+            ObjectPooler.Instance?.ReturnUnit(unit.gameObject);
+        }
+        public void UpdateState(Unit unit) { }
+        public void ExitState()
+        {
+            Debug.Log("Exiting Death State.");
+        }
     }
-    public void UpdateState(Unit unit) { }
-    public void ExitState() { }
 }

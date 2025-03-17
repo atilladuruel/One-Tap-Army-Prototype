@@ -1,21 +1,24 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIManager : MonoBehaviour
+namespace Game.UI
 {
-    public static UIManager Instance;
-    public GameObject pauseMenu;
-
-    private void Awake()
+    public class UIManager : MonoBehaviour
     {
-        if (Instance == null)
-            Instance = this;
-        else
-            Destroy(gameObject);
-    }
+        public static UIManager Instance;
+        public GameObject pauseMenu;
 
-    public void TogglePauseMenu(bool isActive)
-    {
-        pauseMenu.SetActive(isActive);
+        private void Awake()
+        {
+            if (Instance == null)
+                Instance = this;
+            else
+                Destroy(gameObject);
+        }
+
+        public void TogglePauseMenu(bool isActive)
+        {
+            pauseMenu.SetActive(isActive);
+        }
     }
 }
