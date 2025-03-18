@@ -218,7 +218,7 @@ MonoBehaviour:
   - {fileID: 7661008358379543433, guid: f21633d5f4712ee478ae33297d043315, type: 3}
   - {fileID: 2303027527394816057, guid: 24991602ef31d314395cb10d910052d5, type: 3}
   - {fileID: 5832502537218479483, guid: da12dae345186ac4a9cc4194df951a23, type: 3}
-  poolSize: 100
+  poolSize: 10
 --- !u!4 &110241645
 Transform:
   m_ObjectHideFlags: 0

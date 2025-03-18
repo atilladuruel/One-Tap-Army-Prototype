@@ -23,8 +23,7 @@ namespace Game.AI
         public List<Castle> enemyCastles;
         private Castle targetCastle;
 
-        private float decisionInterval = 5f; // AI makes decisions every 5 seconds
-        private float lastDecisionTime = 0f;
+        private float decisionInterval = 5f;
 
         private void Start()
         {
@@ -136,7 +135,9 @@ namespace Game.AI
             if (targetCastle == null) return;
 
             Debug.Log($"🔥 AI is attacking {targetCastle.ownerName}'s castle!");
-            MoveUnitsInFormation(targetCastle.transform.position);
+
+            // Ensure that AI moves to the castle and attacks immediately
+            MoveUnitsInFormation(targetCastle.transform.position, true);
         }
 
         /// <summary>
@@ -150,8 +151,9 @@ namespace Game.AI
 
         /// <summary>
         /// Moves AI units in formation towards the target position.
+        /// If the target is an enemy castle, units will attack immediately upon arrival.
         /// </summary>
-        private void MoveUnitsInFormation(Vector3 targetPosition)
+        private void MoveUnitsInFormation(Vector3 targetPosition, bool isTargetCastle = false)
         {
             if (activeUnits.Count == 0) return;
 
@@ -164,6 +166,12 @@ namespace Game.AI
                 if (activeUnits[i] != null)
                 {
                     activeUnits[i].MoveTo(formationPositions[i]);
+
+                    // If target is a castle, set it as the attack target immediately
+                    if (isTargetCastle)
+                    {
+                        activeUnits[i].SetTargetCastle(targetCastle);
+                    }
                 }
             }
         }

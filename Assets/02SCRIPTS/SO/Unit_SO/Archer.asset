@@ -15,7 +15,7 @@ MonoBehaviour:
   unitName: Archer
   unitType: 1
   upgradeType: 0000000002000000
-  health: 80
+  health: 30
   speed: 1.5
   attack: 15
   spawnTime: 3

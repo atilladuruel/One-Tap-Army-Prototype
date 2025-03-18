@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using Game.Core;
 
-namespace Game.Player
+namespace Game.Units
 {
     /// <summary>
     /// Represents a player's or AI's castle.
     /// </summary>
-    public class Castle : MonoBehaviour
+    public class Castle : MonoBehaviour,IDamageable
     {
         [SerializeField] private Transform _spawnPoint;
         public int playerID;

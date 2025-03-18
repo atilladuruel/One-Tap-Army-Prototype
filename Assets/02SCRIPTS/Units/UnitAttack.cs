@@ -39,7 +39,6 @@ namespace Game.Units
 
         private void FindAndAttackEnemy()
         {
-            // Check for enemy units and castles within attack range
             Collider[] colliders = Physics.OverlapSphere(transform.position, awarenessRange, LayerMask.GetMask("Unit", "Castle"));
 
             foreach (Collider col in colliders)
@@ -47,35 +46,30 @@ namespace Game.Units
                 Unit targetUnit = col.GetComponent<Unit>();
                 Castle targetCastle = col.GetComponent<Castle>();
 
+                IDamageable target = null;
+
                 if (targetUnit != null && unit.IsEnemy(targetUnit))
                 {
-                    float distance = Vector3.Distance(transform.position, targetUnit.transform.position);
-
-                    if (unit.unitData.unitType == UnitType.Archer && distance > attackRange && distance <= rangedAttackRange)
-                    {
-                        unit.ChangeState(new RangedAttackState(targetUnit)); // Switch to ranged attack state
-                    }
-                    else if (distance <= attackRange)
-                    {
-                        unit.ChangeState(new MeleeAttackState(targetUnit)); // Switch to melee attack state
-                    }
-
-                    lastAttackTime = Time.time;
-                    return; // If an enemy unit is found, do not attack the castle
+                    target = targetUnit;
+                }
+                else if (targetCastle != null && targetCastle.playerID != unit.playerID)
+                {
+                    target = targetCastle;
                 }
 
-                // If no enemy units are found, check for enemy castles
-                if (targetCastle != null && targetCastle.playerID != unit.playerID)
+                if (target != null && target.IsAlive())
                 {
-                    float distance = Vector3.Distance(transform.position, targetCastle.transform.position);
+                    float distance = Vector3.Distance(transform.position, ((MonoBehaviour)target).transform.position);
 
-                    if (distance <= attackRange) // If within attack range, attack the castle
-                    {
-                        unit.ChangeState(new AttackCastleState(targetCastle));
-                    }
+                    bool isRanged = unit.unitData.unitType == UnitType.Archer && distance > attackRange && distance <= rangedAttackRange;
+
+                    unit.ChangeState(new AttackState(target, isRanged)); // ✅ AttackState kullanılıyor
+                    lastAttackTime = Time.time;
+                    return;
                 }
             }
         }
+
 
 
 

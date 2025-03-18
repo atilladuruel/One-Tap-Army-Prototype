@@ -15,8 +15,8 @@ MonoBehaviour:
   unitName: Swordsman
   unitType: 0
   upgradeType: 0000000002000000
-  health: 150
-  speed: 1.5
+  health: 50
+  speed: 1.2
   attack: 25
-  spawnTime: 4
-  spawnTimeDecrease: 0.1
+  spawnTime: 5
+  spawnTimeDecrease: 0.25

@@ -6,10 +6,11 @@ using Game.Core;
 using Game.Scriptables;
 using Game.Units.States;
 using System.Collections;
+using Game.Player;
 
 namespace Game.Units
 {
-    public class Unit : MonoBehaviour
+    public class Unit : MonoBehaviour, IDamageable
     {
         public int playerID;
         public List<Renderer> unitRenderer;
@@ -25,7 +26,9 @@ namespace Game.Units
         private int health;
         private float speed;
         private int attackPower;
+        private Castle targetCastle;
         private IUnitState currentState;
+        private UnitAttack unitAttack;
 
         public event System.Action OnLevelUp; // Event to notify level up
 
@@ -70,35 +73,77 @@ namespace Game.Units
             }
 
             agent = GetComponent<NavMeshAgent>();
-            animator = GetComponent<Animator>(); // Gettin Animator component
+            animator = GetComponent<Animator>();
+            unitAttack = GetComponent<UnitAttack>();
             agent.speed = speed;
 
             ChangeState(new IdleState());
         }
 
+        /// <summary>
+        /// Updates the unit's state based on proximity to the target.
+        /// </summary>
         private void Update()
         {
             currentState?.UpdateState(this);
 
-            // If unit reaches its destination, switch to IdleState
             if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
             {
-                ChangeState(new IdleState());
-            }
+                IDamageable target = FindClosestEnemy(); // Find closest target (Unit or Castle)
 
-            // If movement queue is not empty, move to next position
-            if (movementQueue.Count > 0 && agent.remainingDistance <= agent.stoppingDistance)
-            {
-                MoveTo(movementQueue.Dequeue());
+                if (target != null)
+                {
+                    bool isRanged = unitData.unitType == UnitType.Archer && Vector3.Distance(transform.position, ((MonoBehaviour)target).transform.position) > unitAttack.attackRange;
+                    ChangeState(new AttackState(target, isRanged)); // Use AttackState for both castles and units
+                }
+                else
+                {
+                    ChangeState(new IdleState()); // No target, stay idle
+                }
             }
         }
 
+
+        /// <summary>
+        /// Changes the unit's state and enables/disables NavMeshAgent accordingly.
+        /// </summary>
         public void ChangeState(IUnitState newState)
         {
             currentState?.ExitState();
             currentState = newState;
             currentState.EnterState(this);
+
+            // Enable NavMeshAgent only if in MoveState
+            agent.enabled = currentState is MoveState;
         }
+
+
+        /// <summary>
+        /// Finds the closest enemy unit or castle within attack range.
+        /// </summary>
+        private IDamageable FindClosestEnemy()
+        {
+            Collider[] colliders = Physics.OverlapSphere(transform.position, unitAttack.awarenessRange, LayerMask.GetMask("Unit", "Castle"));
+            IDamageable closestTarget = null;
+            float minDistance = float.MaxValue;
+
+            foreach (Collider col in colliders)
+            {
+                IDamageable target = col.GetComponent<IDamageable>();
+
+                if (target != null && target.IsAlive() && !ReferenceEquals(target, this))
+                {
+                    float distance = Vector3.Distance(transform.position, ((MonoBehaviour)target).transform.position);
+                    if (distance < minDistance)
+                    {
+                        minDistance = distance;
+                        closestTarget = target;
+                    }
+                }
+            }
+            return closestTarget;
+        }
+
 
         /// <summary>
         /// Moves the unit to a target position.
@@ -168,6 +213,11 @@ namespace Game.Units
             return playerID != other.playerID; // If they have different IDs, they are enemies
         }
 
+        public bool IsAlive()
+        {
+            return Health > 0;
+        }
+
         /// <summary>
         /// Takes damage from enemy attacks.
         /// </summary>
@@ -212,5 +262,14 @@ namespace Game.Units
             yield return new WaitForSeconds(delay);
             ObjectPooler.Instance.ReturnUnit(gameObject);
         }
+
+        /// <summary>
+        /// Assigns a castle as the attack target.
+        /// </summary>
+        public void SetTargetCastle(Castle castle)
+        {
+            targetCastle = castle;
+        }
+
     }
 }
