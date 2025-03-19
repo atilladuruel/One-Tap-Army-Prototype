@@ -29,6 +29,7 @@ namespace Game.Units
         private Castle targetCastle;
         private IUnitState currentState;
         private UnitAttack unitAttack;
+        private IDamageable currentTarget;
 
         public event System.Action OnLevelUp; // Event to notify level up
 
@@ -85,21 +86,58 @@ namespace Game.Units
         /// </summary>
         private void Update()
         {
+            if (agent == null || !agent.isOnNavMesh) return;
+
             currentState?.UpdateState(this);
 
-            if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
+            // Eðer mevcut hedef ölü ya da yoksa yeni bir hedef bul
+            if (currentTarget == null || !currentTarget.IsAlive())
             {
-                IDamageable target = FindClosestEnemy(); // Find closest target (Unit or Castle)
+                currentTarget = FindClosestEnemy();
+            }
 
-                if (target != null)
+            // Eðer düþman bulduysa ona saldýr ya da yaklaþ
+            if (currentTarget != null)
+            {
+                float distance = Vector3.Distance(transform.position, ((MonoBehaviour)currentTarget).transform.position);
+
+                if (distance <= unitData.attackRange)
                 {
-                    bool isRanged = unitData.unitType == UnitType.Archer && Vector3.Distance(transform.position, ((MonoBehaviour)target).transform.position) > unitAttack.attackRange;
-                    ChangeState(new AttackState(target, isRanged)); // Use AttackState for both castles and units
+                    ChangeState(new AttackState(currentTarget, false)); // Yakýn dövüþ
                 }
-                else
+                else if (unitData.unitType == UnitType.Archer && distance <= unitData.rangedAttackRange)
                 {
-                    ChangeState(new IdleState()); // No target, stay idle
+                    ChangeState(new AttackState(currentTarget, true)); // Okçu uzak mesafeden saldýrabilir
                 }
+                else if (distance <= unitData.awarenessRange)
+                {
+                    ChangeState(new MoveState(((MonoBehaviour)currentTarget).transform.position)); // Eðer fark ettiyse yaklaþ
+                }
+            }
+            else
+            {
+                Debug.Log("No Target");
+                ChangeState(new IdleState()); // Eðer düþman yoksa boþa hareket etmesin
+            }
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            if (unitData == null) return;
+
+            // Awareness Range (Mavi)
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireSphere(transform.position, unitData.awarenessRange);
+
+            // Attack Range (Kýrmýzý)
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, unitData.attackRange);
+
+            // Ranged Attack Range (Yeþil) - Sadece Archer için
+            if (unitData.unitType == UnitType.Archer)
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawWireSphere(transform.position, unitData.rangedAttackRange);
             }
         }
 
@@ -123,15 +161,27 @@ namespace Game.Units
         /// </summary>
         private IDamageable FindClosestEnemy()
         {
-            Collider[] colliders = Physics.OverlapSphere(transform.position, unitAttack.awarenessRange, LayerMask.GetMask("Unit", "Castle"));
+            Collider[] colliders = Physics.OverlapSphere(transform.position, unitData.awarenessRange, LayerMask.GetMask("Unit", "Castle"));
             IDamageable closestTarget = null;
             float minDistance = float.MaxValue;
 
             foreach (Collider col in colliders)
             {
-                IDamageable target = col.GetComponent<IDamageable>();
+                Unit targetUnit = col.GetComponent<Unit>();
+                Castle targetCastle = col.GetComponent<Castle>();
 
-                if (target != null && target.IsAlive() && !ReferenceEquals(target, this))
+                IDamageable target = null;
+
+                if (targetUnit != null && IsEnemy(targetUnit))
+                {
+                    target = targetUnit;
+                }
+                else if (targetCastle != null && targetCastle.playerID != playerID)
+                {
+                    target = targetCastle;
+                }
+
+                if (target != null && target.IsAlive())
                 {
                     float distance = Vector3.Distance(transform.position, ((MonoBehaviour)target).transform.position);
                     if (distance < minDistance)
@@ -141,6 +191,7 @@ namespace Game.Units
                     }
                 }
             }
+
             return closestTarget;
         }
 
@@ -150,12 +201,30 @@ namespace Game.Units
         /// </summary>
         public void MoveTo(Vector3 targetPosition)
         {
-            NavMeshHit hit;
-            if (NavMesh.SamplePosition(targetPosition, out hit, 2f, NavMesh.AllAreas))
+            if (agent == null)
             {
-                ChangeState(new MoveState(hit.position));
+                Debug.LogError($"? {unitName} has no NavMeshAgent!");
+                return;
+            }
+
+            if (!agent.enabled)
+            {
+                Debug.LogWarning($"? {unitName} NavMeshAgent was disabled, enabling now...");
+                agent.enabled = true;
+            }
+
+            if (agent.isOnNavMesh)
+            {
+                agent.SetDestination(targetPosition);
+                ChangeState(new MoveState(targetPosition));
+                //Debug.Log($"?? {unitName} is moving to {targetPosition}");
+            }
+            else
+            {
+                Debug.LogError($"? {unitName} is NOT on a NavMesh! Cannot move.");
             }
         }
+
 
         /// <summary>
         /// Moves unit in a formation by adding positions to queue.

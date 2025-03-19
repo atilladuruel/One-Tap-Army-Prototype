@@ -4,6 +4,7 @@ using UnityEngine;
 using Game.Units;
 using Game.Scriptables;
 using Game.Core;
+using UnityEngine.AI;
 
 namespace Game.Player
 {
@@ -141,24 +142,27 @@ namespace Game.Player
         /// </summary>
         public void MoveSelectedUnits(Vector3 targetPosition)
         {
-            if (activeUnits.Count == 0) return;
+            if (activeUnits == null || activeUnits.Count == 0)
+            {
+                Debug.LogWarning("⚠ No active units available to move!");
+                return;
+            }
 
-            List<Vector3> formationPositions;
-
-            // Choose the formation type dynamically
-            if (activeUnits.Count > 5)
-                formationPositions = GetGridFormation(targetPosition, activeUnits.Count);
-            else
-                formationPositions = GetFormationPositions(targetPosition, activeUnits.Count);
+            List<Vector3> formationPositions = (activeUnits.Count > 5)
+                ? GetGridFormation(targetPosition, activeUnits.Count)
+                : GetFormationPositions(targetPosition, activeUnits.Count);
 
             for (int i = 0; i < activeUnits.Count; i++)
             {
-                if (activeUnits[i] != null)
+                Unit unit = activeUnits[i];
+
+                if (unit != null)
                 {
-                    activeUnits[i].MoveTo(formationPositions[i]); // Move each unit to its designated spot
+                    unit.MoveTo(formationPositions[i]);
                 }
             }
         }
+
 
         /// <summary>
         /// Generates a circular formation around the target position.

@@ -15,6 +15,10 @@ namespace Game.Scriptables
         public int health;
         public float speed;
         public int attack;
+        public float attackRange = 0.5f; // Melee attack range
+        public float rangedAttackRange = 1.5f; // Archer's ranged attack range
+        public float awarenessRange = 2f; // Unit awareness range
+        public float attackCooldown = 0.5f;
         public float spawnTime;
         public float spawnTimeDecrease;
     }

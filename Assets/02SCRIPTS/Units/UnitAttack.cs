@@ -1,4 +1,5 @@
 ﻿using Game.Player;
+using Game.Scriptables;
 using Game.Units.States;
 using UnityEngine;
 
@@ -6,22 +7,20 @@ namespace Game.Units
 {
     public class UnitAttack : MonoBehaviour
     {
-        private Unit unit;
-        private int damage;
-        public float attackRange = 1f; // Melee attack range
-        public float rangedAttackRange = 3f; // Archer's ranged attack range
-        public float awarenessRange = 5f; // Archer's ranged attack range
-        public float attackCooldown = 1.5f;
-        private float lastAttackTime = 0f;
+        private Unit _unit;
+        private UnitData _unitData;
+        private int _damage;
+        private float _lastAttackTime = 0f;
         public GameObject arrowPrefab; // Projectile for ranged attack
         public Transform firePoint; // Where the arrow is fired from (for archers)
 
         private void Awake()
         {
-            unit = GetComponent<Unit>();
-            if (unit != null && unit.unitData != null)
+            _unit = GetComponent<Unit>();
+            if (_unit != null && _unit.unitData != null)
             {
-                damage = unit.unitData.attack;
+                _unitData = _unit.unitData;
+                _damage = _unit.unitData.attack;
             }
             else
             {
@@ -31,7 +30,7 @@ namespace Game.Units
 
         private void Update()
         {
-            if (Time.time >= lastAttackTime + attackCooldown)
+            if (Time.time >= _lastAttackTime + _unitData.attackCooldown)
             {
                 FindAndAttackEnemy();
             }
@@ -39,7 +38,7 @@ namespace Game.Units
 
         private void FindAndAttackEnemy()
         {
-            Collider[] colliders = Physics.OverlapSphere(transform.position, awarenessRange, LayerMask.GetMask("Unit", "Castle"));
+            Collider[] colliders = Physics.OverlapSphere(transform.position, _unitData.unitType == UnitType.Archer? _unitData.rangedAttackRange : _unitData.attackRange, LayerMask.GetMask("Unit", "Castle"));
 
             foreach (Collider col in colliders)
             {
@@ -48,11 +47,11 @@ namespace Game.Units
 
                 IDamageable target = null;
 
-                if (targetUnit != null && unit.IsEnemy(targetUnit))
+                if (targetUnit != null && _unit.IsEnemy(targetUnit))
                 {
                     target = targetUnit;
                 }
-                else if (targetCastle != null && targetCastle.playerID != unit.playerID)
+                else if (targetCastle != null && targetCastle.playerID != _unit.playerID)
                 {
                     target = targetCastle;
                 }
@@ -61,10 +60,10 @@ namespace Game.Units
                 {
                     float distance = Vector3.Distance(transform.position, ((MonoBehaviour)target).transform.position);
 
-                    bool isRanged = unit.unitData.unitType == UnitType.Archer && distance > attackRange && distance <= rangedAttackRange;
+                    bool isRanged = _unit.unitData.unitType == UnitType.Archer && distance > _unitData.attackRange && distance <= _unitData.rangedAttackRange;
 
-                    unit.ChangeState(new AttackState(target, isRanged)); // ✅ AttackState kullanılıyor
-                    lastAttackTime = Time.time;
+                    _unit.ChangeState(new AttackState(target, isRanged));
+                    _lastAttackTime = Time.time;
                     return;
                 }
             }
@@ -75,13 +74,13 @@ namespace Game.Units
 
         private void Attack(Unit target)
         {
-            Debug.Log($"{unit.UnitName} is attacking {target.UnitName} with {damage} damage!");
-            target.TakeDamage(damage);
+            Debug.Log($"{_unit.UnitName} is attacking {target.UnitName} with {_damage} damage!");
+            target.TakeDamage(_damage);
         }
 
         private void RangedAttack(Unit target)
         {
-            Debug.Log($"{unit.UnitName} is shooting an arrow at {target.UnitName}!");
+            Debug.Log($"{_unit.UnitName} is shooting an arrow at {target.UnitName}!");
 
             if (arrowPrefab != null && firePoint != null)
             {
@@ -89,7 +88,7 @@ namespace Game.Units
                 Arrow arrowComponent = arrow.GetComponent<Arrow>();
                 if (arrowComponent != null)
                 {
-                    arrowComponent.SetTarget(target.transform, damage);
+                    arrowComponent.SetTarget(target.transform, _damage);
                 }
             }
             else
