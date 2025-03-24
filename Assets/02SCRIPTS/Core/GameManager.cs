@@ -87,7 +87,7 @@ namespace Game.Core
         {
             isGameOver = true;
             Debug.Log($"Game Over! The winner is: {winner.ownerName} with {winner.GetHealth()} HP remaining.");
-
+            PauseGame();
 
         }
 

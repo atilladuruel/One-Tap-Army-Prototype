@@ -31,7 +31,9 @@ namespace Game.Player
         {
             if (defaultUnit != null)
             {
-                SelectUnit(defaultUnit);
+                selectedUnitData = defaultUnit;
+                // Start spawning the selected unit continuously
+                spawnRoutine = StartCoroutine(SpawnSelectedUnitContinuously());
             }
         }
 
@@ -96,33 +98,11 @@ namespace Game.Player
 
             if (Physics.Raycast(ray, out hit))
             {
-                if (hit.collider.CompareTag("Unit")) // Select a unit if clicked/tapped
-                {
-                    SelectUnit(hit.collider.GetComponent<Unit>().unitData);
-                }
-                else if (selectedUnitData != null) // If ground is clicked, move units in formation
+                if (selectedUnitData != null) // If ground is clicked, move units in formation
                 {
                     MoveSelectedUnits(hit.point);
                 }
             }
-        }
-
-        /// <summary>
-        /// Selects a unit type from the UI and starts continuous spawning for that unit.
-        /// </summary>
-        public void SelectUnit(UnitData newUnitData)
-        {
-            if (newUnitData == null || GameManager.Instance.isGameOver)
-                return;
-
-            selectedUnitData = newUnitData;
-
-            // Stop the previous spawn routine if it's running
-            if (spawnRoutine != null)
-                StopCoroutine(spawnRoutine);
-
-            // Start spawning the selected unit continuously
-            spawnRoutine = StartCoroutine(SpawnSelectedUnitContinuously());
         }
 
         /// <summary>

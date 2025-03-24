@@ -5,6 +5,13 @@ using Game.Core;
 
 namespace Game.Units
 {
+    public struct CastleData
+    {
+        public int health;
+        public int maxHealth;
+        public bool isDestroyed;
+    }
+
     /// <summary>
     /// Represents a player's or AI's castle.
     /// </summary>

@@ -14,7 +14,7 @@ namespace Game.Units
 
         public void ChangeState(IUnitState newState)
         {
-            currentState?.ExitState();
+            currentState?.ExitState(unit);
             currentState = newState;
             currentState.EnterState(unit);
         }

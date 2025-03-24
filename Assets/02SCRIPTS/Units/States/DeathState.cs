@@ -11,7 +11,7 @@ namespace Game.Units.States
             ObjectPooler.Instance?.ReturnUnit(unit.gameObject);
         }
         public void UpdateState(Unit unit) { }
-        public void ExitState()
+        public void ExitState(Unit unit)
         {
             Debug.Log("Exiting Death State.");
         }

@@ -10,6 +10,6 @@ namespace Game.Units.States
             Debug.Log($"{unit.name} has entered Idle State.");
         }
         public void UpdateState(Unit unit) { }
-        public void ExitState() { }
+        public void ExitState(Unit unit) { }
     }
 }

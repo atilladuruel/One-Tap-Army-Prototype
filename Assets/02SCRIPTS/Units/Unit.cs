@@ -12,6 +12,7 @@ namespace Game.Units
 {
     public class Unit : MonoBehaviour, IDamageable
     {
+        public bool activateStates = false;
         public int playerID;
         public List<Renderer> unitRenderer;
         public NavMeshAgent agent;
@@ -86,7 +87,7 @@ namespace Game.Units
         /// </summary>
         private void Update()
         {
-            if (agent == null || !agent.isOnNavMesh) return;
+            if (agent == null || !agent.enabled || !agent.isOnNavMesh) return;
 
             currentState?.UpdateState(this);
 
@@ -96,30 +97,42 @@ namespace Game.Units
                 currentTarget = FindClosestEnemy();
             }
 
-            // Eðer düþman bulduysa ona saldýr ya da yaklaþ
             if (currentTarget != null)
             {
                 float distance = Vector3.Distance(transform.position, ((MonoBehaviour)currentTarget).transform.position);
 
                 if (distance <= unitData.attackRange)
                 {
-                    ChangeState(new AttackState(currentTarget, false)); // Yakýn dövüþ
+                    if (!(currentState is AttackState))
+                    {
+                        ChangeState(new AttackState(currentTarget, false)); // Yakýn dövüþ
+                    }
                 }
                 else if (unitData.unitType == UnitType.Archer && distance <= unitData.rangedAttackRange)
                 {
-                    ChangeState(new AttackState(currentTarget, true)); // Okçu uzak mesafeden saldýrabilir
+                    if (!(currentState is AttackState))
+                    {
+                        ChangeState(new AttackState(currentTarget, true)); // Okçu uzak mesafeden saldýrabilir
+                    }
                 }
                 else if (distance <= unitData.awarenessRange)
                 {
-                    ChangeState(new MoveState(((MonoBehaviour)currentTarget).transform.position)); // Eðer fark ettiyse yaklaþ
+                    if (!(currentState is MoveState))
+                    {
+                        ChangeState(new MoveState(((MonoBehaviour)currentTarget).transform.position)); // Eðer fark ettiyse yaklaþ
+                    }
                 }
             }
             else
             {
-                Debug.Log("No Target");
-                ChangeState(new IdleState()); // Eðer düþman yoksa boþa hareket etmesin
+                if (!(currentState is IdleState))
+                {
+                    Debug.Log("No Target");
+                    ChangeState(new IdleState()); // Eðer düþman yoksa IdleState’e geç
+                }
             }
         }
+
 
         private void OnDrawGizmosSelected()
         {
@@ -147,14 +160,29 @@ namespace Game.Units
         /// </summary>
         public void ChangeState(IUnitState newState)
         {
-            currentState?.ExitState();
+            currentState?.ExitState(this);
             currentState = newState;
             currentState.EnterState(this);
 
-            // Enable NavMeshAgent only if in MoveState
-            agent.enabled = currentState is MoveState;
+            // Eðer MoveState deðilse, NavMeshAgent'in kapanmasýný geciktir
+            if (!(currentState is MoveState))
+            {
+                StartCoroutine(DisableNavMeshAgentWithDelay(0.2f)); // 0.2 saniye gecikmeli kapat
+            }
+            else
+            {
+                agent.enabled = true; // MoveState içindeyken NavMeshAgent hep açýk
+            }
         }
 
+        private IEnumerator DisableNavMeshAgentWithDelay(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            if (!(currentState is MoveState)) // Eðer o sýrada MoveState'e geçilmemiþse kapat
+            {
+                agent.enabled = false;
+            }
+        }
 
         /// <summary>
         /// Finds the closest enemy unit or castle within attack range.
@@ -163,7 +191,6 @@ namespace Game.Units
         {
             Collider[] colliders = Physics.OverlapSphere(transform.position, unitData.awarenessRange, LayerMask.GetMask("Unit", "Castle"));
             IDamageable closestTarget = null;
-            float minDistance = float.MaxValue;
 
             foreach (Collider col in colliders)
             {
@@ -183,12 +210,7 @@ namespace Game.Units
 
                 if (target != null && target.IsAlive())
                 {
-                    float distance = Vector3.Distance(transform.position, ((MonoBehaviour)target).transform.position);
-                    if (distance < minDistance)
-                    {
-                        minDistance = distance;
-                        closestTarget = target;
-                    }
+                    closestTarget = target;
                 }
             }
 

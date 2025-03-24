@@ -5,6 +5,6 @@ namespace Game.Units.States
     {
         void EnterState(Unit unit);
         void UpdateState(Unit unit);
-        void ExitState();
+        void ExitState(Unit unit);
     }
 }

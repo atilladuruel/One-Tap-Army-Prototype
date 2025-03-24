@@ -38,7 +38,7 @@ namespace Game.Units.States
             }
         }
 
-        public void ExitState()
+        public void ExitState(Unit unit)
         {
             Debug.Log("Exiting Attack State.");
         }
