@@ -18,5 +18,9 @@ MonoBehaviour:
   health: 50
   speed: 1.2
   attack: 25
+  attackRange: 0.75
+  rangedAttackRange: 2.5
+  awarenessRange: 2.5
+  attackCooldown: 0.5
   spawnTime: 5
   spawnTimeDecrease: 0.25

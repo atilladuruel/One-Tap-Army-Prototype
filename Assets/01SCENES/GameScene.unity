@@ -875,6 +875,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: Managers
       objectReference: {fileID: 0}
+    - target: {fileID: 5741359108555274433, guid: f5b2e31fe29050545b90d9744dc56789, type: 3}
+      propertyPath: gameDuration
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5741359108555274433, guid: f5b2e31fe29050545b90d9744dc56789, type: 3}
+      propertyPath: castles.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5741359108555274433, guid: f5b2e31fe29050545b90d9744dc56789, type: 3}
+      propertyPath: 'castles.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2108658228}
+    - target: {fileID: 5741359108555274433, guid: f5b2e31fe29050545b90d9744dc56789, type: 3}
+      propertyPath: 'castles.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1020062998}
+    - target: {fileID: 5741359108555274433, guid: f5b2e31fe29050545b90d9744dc56789, type: 3}
+      propertyPath: 'castles.Array.data[2]'
+      value: 
+      objectReference: {fileID: 1584452019}
+    - target: {fileID: 5741359108555274433, guid: f5b2e31fe29050545b90d9744dc56789, type: 3}
+      propertyPath: 'castles.Array.data[3]'
+      value: 
+      objectReference: {fileID: 1201409704}
     - target: {fileID: 6295253960695477168, guid: f5b2e31fe29050545b90d9744dc56789, type: 3}
       propertyPath: players.Array.data[0].castle
       value: 

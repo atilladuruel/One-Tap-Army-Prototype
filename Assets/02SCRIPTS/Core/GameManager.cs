@@ -14,7 +14,7 @@ namespace Game.Core
         internal bool isGameOver;
         public bool IsGamePaused { get; private set; }
 
-        private float gameDuration = 300f; // 5 minutes (300 seconds)
+        public float gameDuration = 300f; // 5 minutes (300 seconds)
         private float remainingTime;
 
         public List<Castle> castles; // List of all castles in the game

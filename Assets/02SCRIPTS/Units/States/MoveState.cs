@@ -43,11 +43,6 @@ namespace Game.Units.States
 
         public void ExitState(Unit unit)
         {
-            NavMeshAgent agent = unit.GetComponent<NavMeshAgent>();
-            if (agent != null)
-            {
-                agent.enabled = false; // Disable NavMeshAgent on exit
-            }
         }
     }
 }

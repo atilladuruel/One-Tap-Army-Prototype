@@ -10,74 +10,75 @@ using Game.Player;
 
 namespace Game.Units
 {
+
+    [SelectionBase]
     public class Unit : MonoBehaviour, IDamageable
     {
-        public bool activateStates = false;
         public int playerID;
         public List<Renderer> unitRenderer;
         public NavMeshAgent agent;
         public UnitData unitData;
         public Animator animator; // Animator for animations
 
-        public Vector3 target;
-        private Queue<Vector3> movementQueue = new Queue<Vector3>(); // Queue for formation movement
+        private Vector3 _positionTarget;
+        private Queue<Vector3> _movementQueue = new Queue<Vector3>(); // Queue for formation movement
 
-        private int level = 1;
-        private string unitName;
-        private int health;
-        private float speed;
-        private int attackPower;
-        private Castle targetCastle;
-        private IUnitState currentState;
-        private UnitAttack unitAttack;
-        private IDamageable currentTarget;
+        private int _level = 1;
+        private string _unitName;
+        private int _health;
+        private float _speed;
+        private int _attackPower;
+        private Castle _targetCastle;
+        private IUnitState _currentState;
+        private UnitAttack _unitAttack;
+        private IDamageable _unitTarget;
 
         public event System.Action OnLevelUp; // Event to notify level up
 
         public int Level
         {
-            get { return level; }
-            set { if (value > 0) level = value; }
+            get { return _level; }
+            set { if (value > 0) _level = value; }
         }
 
         public string UnitName
         {
-            get { return unitName; }
-            set { unitName = value; }
+            get { return _unitName; }
+            set { _unitName = value; }
         }
 
         public int Health
         {
-            get { return health; }
-            set { health = Math.Max(0, value); } // Ensure health doesn't go below 0
+            get { return _health; }
+            set { _health = Math.Max(0, value); } // Ensure health doesn't go below 0
         }
 
         public float Speed
         {
-            get { return speed; }
-            set { speed = Math.Max(0, value); } // Ensure speed isn't negative
+            get { return _speed; }
+            set { _speed = Math.Max(0, value); } // Ensure speed isn't negative
         }
 
         public int AttackPower
         {
-            get { return attackPower; }
-            set { attackPower = Math.Max(0, value); } // Ensure attack power isn't negative
+            get { return _attackPower; }
+            set { _attackPower = Math.Max(0, value); } // Ensure attack power isn't negative
         }
 
         private void Awake()
         {
             if (unitData != null) // Initialize unit stats from UnitData
             {
-                unitName = unitData.unitName;
-                health = unitData.health;
-                speed = unitData.speed;
-                attackPower = unitData.attack;
+                _unitName = unitData.unitName;
+                _health = unitData.health;
+                _speed = unitData.speed;
+                _attackPower = unitData.attack;
             }
 
             agent = GetComponent<NavMeshAgent>();
             animator = GetComponent<Animator>();
-            unitAttack = GetComponent<UnitAttack>();
-            agent.speed = speed;
+            _unitAttack = GetComponent<UnitAttack>();
+            agent.speed = _speed;
 
             ChangeState(new IdleState());
         }
@@ -87,48 +88,26 @@ namespace Game.Units
         /// </summary>
         private void Update()
         {
-            if (agent == null || !agent.enabled || !agent.isOnNavMesh) return;
 
-            currentState?.UpdateState(this);
+
+            _currentState?.UpdateState(this);
 
             // Eðer mevcut hedef ölü ya da yoksa yeni bir hedef bul
-            if (currentTarget == null || !currentTarget.IsAlive())
+            if (_unitTarget == null || !_unitTarget.IsAlive())
             {
-                currentTarget = FindClosestEnemy();
+                _unitTarget = FindClosestEnemy();
             }
 
-            if (currentTarget != null)
+            if (_unitTarget != null && !(_currentState is AttackState))
             {
-                float distance = Vector3.Distance(transform.position, ((MonoBehaviour)currentTarget).transform.position);
+                float distance = Vector3.Distance(transform.position, ((MonoBehaviour)_unitTarget).transform.position);
 
-                if (distance <= unitData.attackRange)
+                if (distance <= unitData.awarenessRange)
                 {
-                    if (!(currentState is AttackState))
+                    if (!(_currentState is MoveState))
                     {
-                        ChangeState(new AttackState(currentTarget, false)); // Yakýn dövüþ
+                        MoveTo(((MonoBehaviour)_unitTarget).transform.position); // Eðer fark ettiyse yaklaþ
                     }
-                }
-                else if (unitData.unitType == UnitType.Archer && distance <= unitData.rangedAttackRange)
-                {
-                    if (!(currentState is AttackState))
-                    {
-                        ChangeState(new AttackState(currentTarget, true)); // Okçu uzak mesafeden saldýrabilir
-                    }
-                }
-                else if (distance <= unitData.awarenessRange)
-                {
-                    if (!(currentState is MoveState))
-                    {
-                        ChangeState(new MoveState(((MonoBehaviour)currentTarget).transform.position)); // Eðer fark ettiyse yaklaþ
-                    }
-                }
-            }
-            else
-            {
-                if (!(currentState is IdleState))
-                {
-                    Debug.Log("No Target");
-                    ChangeState(new IdleState()); // Eðer düþman yoksa IdleState’e geç
                 }
             }
         }
@@ -160,13 +139,14 @@ namespace Game.Units
         /// </summary>
         public void ChangeState(IUnitState newState)
         {
-            currentState?.ExitState(this);
-            currentState = newState;
-            currentState.EnterState(this);
+            _currentState?.ExitState(this);
+            _currentState = newState;
+            _currentState.EnterState(this);
 
             // Eðer MoveState deðilse, NavMeshAgent'in kapanmasýný geciktir
-            if (!(currentState is MoveState))
+            if (!(_currentState is MoveState))
             {
+                if (playerID == 0) Debug.Log($"Exit: {_currentState.ToString()}");
                 StartCoroutine(DisableNavMeshAgentWithDelay(0.2f)); // 0.2 saniye gecikmeli kapat
             }
             else
@@ -178,7 +158,7 @@ namespace Game.Units
         private IEnumerator DisableNavMeshAgentWithDelay(float delay)
         {
             yield return new WaitForSeconds(delay);
-            if (!(currentState is MoveState)) // Eðer o sýrada MoveState'e geçilmemiþse kapat
+            if (!(_currentState is MoveState)) // Eðer o sýrada MoveState'e geçilmemiþse kapat
             {
                 agent.enabled = false;
             }
@@ -223,27 +203,29 @@ namespace Game.Units
         /// </summary>
         public void MoveTo(Vector3 targetPosition)
         {
-            if (agent == null)
+            if (_unitTarget == null)
             {
-                Debug.LogError($"? {unitName} has no NavMeshAgent!");
-                return;
-            }
+                if (agent == null)
+                {
+                    Debug.LogError($"? {_unitName} has no NavMeshAgent!");
+                    return;
+                }
 
-            if (!agent.enabled)
-            {
-                Debug.LogWarning($"? {unitName} NavMeshAgent was disabled, enabling now...");
-                agent.enabled = true;
-            }
+                if (!agent.enabled)
+                {
+                    Debug.LogWarning($"? {_unitName} NavMeshAgent was disabled, enabling now...");
+                    agent.enabled = true;
+                }
 
-            if (agent.isOnNavMesh)
-            {
-                agent.SetDestination(targetPosition);
-                ChangeState(new MoveState(targetPosition));
-                //Debug.Log($"?? {unitName} is moving to {targetPosition}");
-            }
-            else
-            {
-                Debug.LogError($"? {unitName} is NOT on a NavMesh! Cannot move.");
+                if (agent.isOnNavMesh)
+                {
+                    ChangeState(new MoveState(targetPosition));
+                    //Debug.Log($"?? {unitName} is moving to {targetPosition}");
+                }
+                else
+                {
+                    Debug.LogError($"? {_unitName} is NOT on a NavMesh! Cannot move.");
+                }
             }
         }
 
@@ -253,15 +235,15 @@ namespace Game.Units
         /// </summary>
         public void MoveInFormation(List<Vector3> formationPositions)
         {
-            movementQueue.Clear();
+            _movementQueue.Clear();
             foreach (Vector3 pos in formationPositions)
             {
-                movementQueue.Enqueue(pos);
+                _movementQueue.Enqueue(pos);
             }
 
-            if (movementQueue.Count > 0)
+            if (_movementQueue.Count > 0)
             {
-                MoveTo(movementQueue.Dequeue());
+                MoveTo(_movementQueue.Dequeue());
             }
         }
 
@@ -270,10 +252,10 @@ namespace Game.Units
         /// </summary>
         private void LevelUp()
         {
-            level++; // Increase level
+            _level++; // Increase level
             OnLevelUp?.Invoke(); // Notify UI or other systems
 
-            Debug.Log($"{unitName} leveled up to {level}!");
+            Debug.Log($"{_unitName} leveled up to {_level}!");
         }
 
         /// <summary>
@@ -281,7 +263,7 @@ namespace Game.Units
         /// </summary>
         public int GetLevel()
         {
-            return level;
+            return _level;
         }
 
         public void Initialize(int ownerID)
@@ -314,11 +296,11 @@ namespace Game.Units
         /// </summary>
         public void TakeDamage(int damage)
         {
-            if (health <= 0) return; // Already dead
+            if (_health <= 0) return; // Already dead
 
-            health -= damage;
+            _health -= damage;
 
-            if (health <= 0)
+            if (_health <= 0)
             {
                 Die();
             }
@@ -331,6 +313,7 @@ namespace Game.Units
         {
             if (animator != null)
             {
+                Debug.Log($"anim trigger: {triggerName}");
                 animator.SetTrigger(triggerName); // Use SetTrigger for smooth transitions
             }
         }
@@ -340,10 +323,7 @@ namespace Game.Units
         /// </summary>
         private void Die()
         {
-            Debug.Log($"{unitName} has been destroyed!");
-
-            PlayAnimation("Death"); // Play death animation before disabling
-
+            ChangeState(new DeathState());
             // Wait for animation to finish before deactivating
             StartCoroutine(DisableAfterDelay(2.5f));
         }
@@ -359,7 +339,7 @@ namespace Game.Units
         /// </summary>
         public void SetTargetCastle(Castle castle)
         {
-            targetCastle = castle;
+            _targetCastle = castle;
         }
 
     }

@@ -6,9 +6,9 @@ namespace Game.Units.States
     {
         public void EnterState(Unit unit)
         {
+            unit.agent.enabled = false;
             unit.PlayAnimation("Death");
             Debug.Log($"{unit.name} has died.");
-            ObjectPooler.Instance?.ReturnUnit(unit.gameObject);
         }
         public void UpdateState(Unit unit) { }
         public void ExitState(Unit unit)

@@ -1164,9 +1164,9 @@ GameObject:
   - component: {fileID: 8696789978137915901}
   - component: {fileID: 3463563616732039130}
   - component: {fileID: 6431126534121880769}
-  - component: {fileID: 3030660454418482309}
   - component: {fileID: 9151053001350483370}
   - component: {fileID: 654033281251569975}
+  - component: {fileID: 654397678154025017}
   m_Layer: 6
   m_Name: Warrior
   m_TagString: Untagged
@@ -1247,6 +1247,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 313e98e5ffacb7041aa9b3a058214252, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  activateStates: 0
   playerID: 0
   unitRenderer:
   - {fileID: 7358175136374681512}
@@ -1256,19 +1257,6 @@ MonoBehaviour:
   agent: {fileID: 8696789978137915901}
   unitData: {fileID: 11400000, guid: 8abbd26a1c2788b428358ba1e6b55dc8, type: 2}
   animator: {fileID: 0}
-  target: {x: 0, y: 0, z: 0}
---- !u!114 &3030660454418482309
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7661008358379543433}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14031247192971547bbd2fde21f857db, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &9151053001350483370
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1281,10 +1269,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ee3f235c3adde5468d656637548125b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackRange: 1
-  rangedAttackRange: 3
-  awarenessRange: 5
-  attackCooldown: 1.5
   arrowPrefab: {fileID: 0}
   firePoint: {fileID: 0}
 --- !u!136 &654033281251569975
@@ -1310,6 +1294,33 @@ CapsuleCollider:
   m_Height: 1.5
   m_Direction: 1
   m_Center: {x: 0, y: 0.5, z: 0}
+--- !u!54 &654397678154025017
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7661008358379543433}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &7703506590665111987
 GameObject:
   m_ObjectHideFlags: 0

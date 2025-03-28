@@ -21,6 +21,7 @@ namespace Game.Core
             }
         }
 
+        private List<GameObject> _unitParents;
         public List<GameObject> unitPrefabs; // All unit prefabs
         public int poolSize = 10;
 
@@ -43,6 +44,11 @@ namespace Game.Core
         /// </summary>
         private void InitializePools()
         {
+            if (_unitParents == null)
+            {
+                _unitParents = new List<GameObject>();
+            }
+
             foreach (var prefab in unitPrefabs)
             {
                 Unit unitComponent = prefab.GetComponent<Unit>();
@@ -53,6 +59,7 @@ namespace Game.Core
                     // Create a parent GameObject for this unit type if it doesn't exist
                     GameObject unitParent = new GameObject(unitType.ToString());
                     unitParent.transform.SetParent(transform); // Attach to ObjectPooler
+                    _unitParents.Add(unitParent);
 
                     // Initialize the queue for this unit type
                     unitPools[unitType] = new Queue<GameObject>();
@@ -88,7 +95,11 @@ namespace Game.Core
                 GameObject prefab = unitPrefabs.Find(p => p.GetComponent<Unit>().unitData.unitType == unitType);
                 if (prefab != null)
                 {
-                    unit = Instantiate(prefab);
+                    string unittype = unitType.ToString();
+                    Transform parentTransform = _unitParents.Find(p => p.name == unittype)?.transform;
+
+                    unit = Instantiate(prefab, parentTransform != null ? parentTransform : transform);
+                    unitPools[unitType].Enqueue(unit);
                 }
                 else
                 {

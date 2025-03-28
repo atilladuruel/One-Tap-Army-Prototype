@@ -72,29 +72,5 @@ namespace Game.Units
 
 
 
-        private void Attack(Unit target)
-        {
-            Debug.Log($"{_unit.UnitName} is attacking {target.UnitName} with {_damage} damage!");
-            target.TakeDamage(_damage);
-        }
-
-        private void RangedAttack(Unit target)
-        {
-            Debug.Log($"{_unit.UnitName} is shooting an arrow at {target.UnitName}!");
-
-            if (arrowPrefab != null && firePoint != null)
-            {
-                GameObject arrow = Instantiate(arrowPrefab, firePoint.position, Quaternion.identity);
-                Arrow arrowComponent = arrow.GetComponent<Arrow>();
-                if (arrowComponent != null)
-                {
-                    arrowComponent.SetTarget(target.transform, _damage);
-                }
-            }
-            else
-            {
-                Debug.LogError("ArrowPrefab or FirePoint is not set for Archer!");
-            }
-        }
     }
 }
